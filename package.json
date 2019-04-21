@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/caatherton/TA-Reminders/issues"
   },
-  "homepage": "https://github.com/caatherton/TA-Reminders#readme"
+  "homepage": "https://github.com/caatherton/TA-Reminders#readme",
+  "dependencies": {
+    "mysql": "^2.17.1"
+  }
 }
