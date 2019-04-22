@@ -1,23 +1,38 @@
 
-// TA Class
-function TA(_name, _phone, _email) {
-	this.name = _name;
-	this.phone = _phone;
-	this.email = _email;
+var express 			= require('express');
+var app 				= express();
+var mustacheExpress 	= require('mustache-express');
+var bodyParser 			= require('body-parser');
+var cookieParser 		= require('cookie-parser');
+var session 			= require('cookie-session');
+var passport 			= require('passport');
+var creds				= require('./credentials.js');
 
-	// make name, phone, and email data accessible inside TA class methods
-	var self = this;
+app.use(cookieParser());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+app.engine('html', mustacheExpress());
+app.set('views', __dirname + '/views');
+app.use(express.static(__dirname + '/public'));
+app.use(express.static(__dirname + '/views'));
 
-	// notify this TA via SMS
-	this.notifySMS = function() {
-		console.log("Sending SMS to " + self.name + " at " + self.phone);
-	}
-}
+// configure session
+app.use(session({ 
+	secret: creds.SESSION_SECRET,
+	name: 'session',
+	resave: true,
+	saveUninitialized: true
+}));
 
-// construct TA instances for the TAs on hours today
-var Thomas = new TA('Thomas', '434-128-3933', 'thomas@gmail.com');
-var Cole = new TA('Cole', '434-133-5555', 'cole@gmail.com');
+var sys = require('./settings.js');
+var auth = require('./auth.js').init(app, passport);
 
-// notice how Thomas.notifySMS uses Thomas' #, while Cole.notifySMS uses Cole's #
-setTimeout(Thomas.notifySMS, 4000);	// notify Thomas after 4 seconds
-setTimeout(Cole.notifySMS, 1000);	// notify Cole after 1 second
+// send user's session info (for testing auth)
+app.get('/', auth.isAuthGET, function(req, res) {
+	res.send(req.user || "There is no session for this user.");
+});
+
+// start server
+var server = app.listen(sys.PORT, function() {
+	console.log('TA Reminder Server listening on port %d', server.address().port);
+});
