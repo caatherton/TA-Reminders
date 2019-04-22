@@ -94,7 +94,10 @@ module.exports = {
 	checkReturnTo: function(req, res, next) {
 		var returnTo = req.query['returnTo'];
 		if (returnTo) {
-			req.session = req.session || {};
+			// if no session, replace with empty object
+			if (!req.session) req.session = {};
+
+			// add returnTo address to session
 			req.session.returnTo = querystring.unescape(returnTo);
 		}
 		next();
