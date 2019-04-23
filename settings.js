@@ -11,7 +11,7 @@ module.exports = {
 	// email notifications schedule for a specific time of day
 	STATIC_EMAIL_NOTS: [
 		moment.utc('08:00:00', 'HH:mm:ss'),
-		moment.utc('13:00:00', 'HH:mm:ss')
+		moment.utc('10:53:20', 'HH:mm:ss')
 	],
 
 	// SMS notifications scheduled for a specific time of day

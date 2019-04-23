@@ -38,15 +38,15 @@ function scheduleAllNotifications(cb) {
 			var res = JSON.parse(body);
 
 			// --------- debug -----------------------------------------
-			res = {err: null, 
-				data: {
-					letter: 'B', 
-					rotation: ['4', '5', '6'], 
-					schedule: [
-						{name: "X Block", start: "2019-04-22 13:35:00"}
-						]
-					}
-				};
+			// res = {err: null, 
+			// 	data: {
+			// 		letter: 'B', 
+			// 		rotation: ['4', '5', '6'], 
+			// 		schedule: [
+			// 			{name: "X Block", start: "2019-04-22 13:35:00"}
+			// 			]
+			// 		}
+			// 	};
 			// -----------------------------------------------------------------
 
 			// if no letter day error
@@ -74,12 +74,12 @@ function scheduleAllNotifications(cb) {
 
 				// if X Block time successfully found & parsed
 				if (XBlock && XBlock.isValid()) {
-					// get notification times relative to X Block
+					// get notification times relative to X Block, add to total notifications
 					emailNotifs.push.apply(emailNotifs, parsePreXTimes(sys.PRE_X_EMAIL_NOTS, XBlock));
 					smsNotifs.push.apply(smsNotifs, parsePreXTimes(sys.PRE_X_SMS_NOTS, XBlock));
 				}
 
-				// get letter day UID by name
+				// get current letter day UID by name
 				con.query('SELECT uid FROM letterDays WHERE name = ?;', [letter], function(err, rows) {
 					if (!err && rows !== undefined && rows.length > 0) {
 						var uid = rows[0].uid;
@@ -89,18 +89,26 @@ function scheduleAllNotifications(cb) {
 							if (!err && rows !== undefined) {
 								var ta;
 
-								// construct TA objects
+								// construct TA object for each TA on hours today, use to schedule calls to notification functions
 								for (var i = 0; i < rows.length; i++) {
 									ta = new TA(rows[i].name, rows[i].phone, rows[i].email);
 
+									console.log("Scheduling notifications for " + ta.name + "...");
+
+									// schedule an email notification for this TA at each specificed email notification time
 									for (var k = 0; k < emailNotifs.length; k++) {
-										// schedule an email notification for this TA, at this time
 										schedule.scheduleJob(emailNotifs[k].toDate(), ta.notifyEmail);
+
+										// debug: log message
+										console.log("Scheduling email for " + ta.email + " at " + emailNotifs[k].format("YYYY-MM-DD hh:mm A"));
 									}
 
+									// schedule an SMS notification for this TA at each specified SMS notification time
 									for (var k = 0; k < smsNotifs.length; k++) {
-										// schedule an SMS notification for this TA, at this time
 										schedule.scheduleJob(smsNotifs[k].toDate(), ta.notifySMS);
+
+										// debug: log message
+										console.log("Scheduling SMS for " + ta.phone + " at " + smsNotifs[k].format("YYYY-MM-DD hh:mm A"));
 									}
 								}
 
@@ -108,17 +116,21 @@ function scheduleAllNotifications(cb) {
 								cb();
 
 							} else {
+								// callback on error
 								cb(err || "Unable to determine which TA's have hours today");
 							}
 						});
 					} else {
+						// callback on error
 						cb(err || "Unable to determine today's letter day");
 					}
 				});
 			} else {
+				// callback on error
 				cb(res.err);
 			}
 		} else {
+			// callback on error
 			cb(err);
 		}
 	});
@@ -164,7 +176,7 @@ function parsePreXTimes(durations, XTime) {
 
 
 
-// // just testing it right now
-// scheduleAllNotifications(function(err) {
-// 	console.log(err);
-// });
+// just testing it right now
+scheduleAllNotifications(function(err) {
+	console.log(err);
+});
