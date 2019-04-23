@@ -28,7 +28,7 @@ var sys = require('./settings.js');
 var auth = require('./auth.js').init(app, passport);
 
 // send user's session info (for testing auth)
-app.get('/test', auth.isAuthGET, function(req, res) {
+app.get('/', function(req, res) {
 	res.send(req.user || "There is no session for this user.");
 });
 
