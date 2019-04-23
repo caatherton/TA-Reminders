@@ -1,6 +1,8 @@
 
 var moment = require('moment');
 var request = require('request');
+var schedule = require('node-schedule');
+var con = require('./database.js').connection;
 var sys = require('./settings.js');
 
 // TA Class
@@ -26,22 +28,8 @@ function TA(_name, _phone, _email) {
 	}
 }
 
-// // construct TA instances for the TAs on hours today
-// var Thomas = new TA('Thomas', '434-128-3933', 'thomas@gmail.com');
-// var Cole = new TA('Cole', '434-133-5555', 'cole@gmail.com');
-
-// // // notice how Thomas.notifySMS uses Thomas' #, while Cole.notifySMS uses Cole's #
-// setTimeout(Thomas.notifySMS, 4000);	// notify Thomas after 4 seconds
-// setTimeout(Cole.notifySMS, 1000);	// notify Cole after 1 second
-
-
-
 // schedule all notifications for today's TAs
 function scheduleAllNotifications(cb) {
-	// --------- debug --------------
-	var XBlock = moment('2019-04-22 13:35:00');
-	// ----------------------------------
-
 	// make request to letter day API to get letter and X Block time
 	request(sys.LETTER_DAY_ENDPOINT, function(err, response, body) {
 		// if no error making request
@@ -49,11 +37,84 @@ function scheduleAllNotifications(cb) {
 			// parse string to object
 			var res = JSON.parse(body);
 
-			console.log(res.data);
+			// --------- debug -----------------------------------------
+			res = {err: null, 
+				data: {
+					letter: 'B', 
+					rotation: ['4', '5', '6'], 
+					schedule: [
+						{name: "X Block", start: "2019-04-22 13:35:00"}
+						]
+					}
+				};
+			// -----------------------------------------------------------------
 
 			// if no letter day error
 			if (!res.err) {
+				// get letter and rotation info
+				var letter = res.data.letter;
+				var rotation = res.data.rotation;
+				var XBlock;
 
+				// if event schedule available
+				if (res.data.schedule) {
+					// find start time for X Block today
+					for (var i = 0; i < res.data.schedule.length; i++) {
+						// if X Block event found
+						if (res.data.schedule[i].name == "X Block") {
+							XBlock = moment(res.data.schedule[i].start);
+							break;
+						}
+					}
+				}
+
+				// get static email & SMS notification times for today
+				var emailNotifs = parseStaticTimes(sys.STATIC_EMAIL_NOTS);
+				var smsNotifs = parseStaticTimes(sys.STATIC_SMS_NOTS);
+
+				// if X Block time successfully found & parsed
+				if (XBlock && XBlock.isValid()) {
+					// get notification times relative to X Block
+					emailNotifs.push.apply(emailNotifs, parsePreXTimes(sys.PRE_X_EMAIL_NOTS, XBlock));
+					smsNotifs.push.apply(smsNotifs, parsePreXTimes(sys.PRE_X_SMS_NOTS, XBlock));
+				}
+
+				// get letter day UID by name
+				con.query('SELECT uid FROM letterDays WHERE name = ?;', [letter], function(err, rows) {
+					if (!err && rows !== undefined && rows.length > 0) {
+						var uid = rows[0].uid;
+
+						// get all TAs who have hours today
+						con.query('SELECT t.name, t.phone, t.email, t.uid FROM letterDayAssgn a JOIN TAs t ON a.taUID = t.uid WHERE letterUID = ?;', [uid], function(err, rows) {
+							if (!err && rows !== undefined) {
+								var ta;
+
+								// construct TA objects
+								for (var i = 0; i < rows.length; i++) {
+									ta = new TA(rows[i].name, rows[i].phone, rows[i].email);
+
+									for (var k = 0; k < emailNotifs.length; k++) {
+										// schedule an email notification for this TA, at this time
+										schedule.scheduleJob(emailNotifs[k].toDate(), ta.notifyEmail);
+									}
+
+									for (var k = 0; k < smsNotifs.length; k++) {
+										// schedule an SMS notification for this TA, at this time
+										schedule.scheduleJob(smsNotifs[k].toDate(), ta.notifySMS);
+									}
+								}
+
+								// callback successfully
+								cb();
+
+							} else {
+								cb(err || "Unable to determine which TA's have hours today");
+							}
+						});
+					} else {
+						cb(err || "Unable to determine today's letter day");
+					}
+				});
 			} else {
 				cb(res.err);
 			}
@@ -61,15 +122,6 @@ function scheduleAllNotifications(cb) {
 			cb(err);
 		}
 	});
-
-
-	// get all email notification times for today
-	var emailNotifs = parseStaticTimes(sys.STATIC_EMAIL_NOTS);
-	emailNotifs.push.apply(emailNotifs, parsePreXTimes(sys.PRE_X_EMAIL_NOTS, XBlock));
-
-	// get all SMS notification times for today
-	var smsNotifs = parseStaticTimes(sys.STATIC_SMS_NOTS);
-	smsNotifs.push.apply(smsNotifs, parsePreXTimes(sys.PRE_X_SMS_NOTS, XBlock));
 }
 
 // parse static notification times to be moment objects for today's date
@@ -110,6 +162,9 @@ function parsePreXTimes(durations, XTime) {
 }
 
 
-scheduleAllNotifications(function(err) {
-	console.log(err);
-});
+
+
+// // just testing it right now
+// scheduleAllNotifications(function(err) {
+// 	console.log(err);
+// });
