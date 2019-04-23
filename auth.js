@@ -18,19 +18,22 @@ module.exports = {
 			// look for TA user by email
 			con.query('SELECT * FROM TAs WHERE email = ?;', [user._json.email], function(err, rows) {
 				if (!err && rows !== undefined && rows.length > 0) {
+					// store system TA profile in session
 					user.local = rows[0];
-					user.local.isAdmin = false;	// register that user is NOT admin
+					user.local.isAdmin = false;
 					done(null, user);
 
 				// if no TA found
 				} else {
-					// look for admin user by email2
+					// look for admin user by email
 					con.query('SELECT * FROM admins WHERE email = ?;', [user._json.email], function(err, rows) {
 						if (!err && rows !== undefined && rows.length > 0) {
+							// store system admin profile in session
 							user.local = rows[0];
-							user.local.isAdmin = true;	// register that user is admin
+							user.local.isAdmin = true;
 							done(null, user);
 						} else {
+							// notify user that they are unable to authenticate
 							done("The system failed to find a user account associated with the given email.", null);
 						}
 					});
@@ -119,7 +122,7 @@ module.exports = {
 		// if authenticated and has session data
 		if (req.isAuthenticated() && req.user.local) {
 			// if administrator, allow
-			if (req.user.local.is_admin) {
+			if (req.user.local.isAdmin) {
 				return next();
 			} else {
 				res.redirect('/');
@@ -140,7 +143,7 @@ module.exports = {
 
 	// middleware (for POSTs) to check if requester is admin
 	isAdminPOST: function(req, res, next) {
-		if (req.isAuthenticated() && req.user.local && req.user.local.is_admin == 1) {
+		if (req.isAuthenticated() && req.user.local && req.user.local.isAdmin == true) {
 			return next();
 		} else {
 			res.redirect('/');
