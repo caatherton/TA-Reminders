@@ -1,10 +1,10 @@
 
 var creds = require('./credentials.js');
+var con = require('./database.js').connection;
+var sys = require('./settings.js');
 var moment = require('moment');
 var request = require('request');
 var schedule = require('node-schedule');
-var con = require('./database.js').connection;
-var sys = require('./settings.js');
 var twilio = require('twilio')(creds.TWILIO_ACCOUNT_SID, creds.TWILIO_AUTH_TOKEN);
 var nodemailer = require('nodemailer');
 
@@ -67,14 +67,15 @@ function TA(_name, _phone, _email, _XBlockTime) {
 
 		// format the X Block start time into a string
 		var xTime = self.xBlockTime.format('h:mm A');
+		var xFromNow = self.xBlockTime.fromNow();
 
 		// configure message settings / content
 		var options = {
 			to: self.email,
 			from: creds.MAIL_ADDRESS,
 			subject: "CSTA Hours Today! (" + xTime + ")",
-			text: "Hey " + self.name + "!\n\nYou have hours today at " + xTime + " (" + self.xBlockTime.fromNow() + ").\n\nLove,\nCSTA Reminder Service";
-			html: ""
+			text: "Hey " + self.name + "!\n\nYou have hours today at " + xTime + " (" + xFromNow + ").\n\nLove,\nCSTA Reminder Service",
+			html: "Hey " + self.name + "!<br><br>You have hours <strong>today at " + xTime + " (" + xFromNow + ")</strong>.<br><br>Love,<br>CSTA Reminder Service",
 		};
 
 		// use nodemailer transporter to send email to TA
@@ -90,18 +91,6 @@ function scheduleAllNotifications(cb) {
 		if (!err) {
 			// parse string to object
 			var res = JSON.parse(body);
-
-			// --------- debug -----------------------------------------
-			// res = {err: null, 
-			// 	data: {
-			// 		letter: 'B', 
-			// 		rotation: ['4', '5', '6'], 
-			// 		schedule: [
-			// 			{name: "X Block", start: "2019-04-22 13:35:00"}
-			// 			]
-			// 		}
-			// 	};
-			// -----------------------------------------------------------------
 
 			// if no letter day error
 			if (!res.err) {
