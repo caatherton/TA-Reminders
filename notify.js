@@ -1,30 +1,84 @@
 
+var creds = require('./credentials.js');
 var moment = require('moment');
 var request = require('request');
 var schedule = require('node-schedule');
 var con = require('./database.js').connection;
 var sys = require('./settings.js');
+var twilio = require('twilio')(creds.TWILIO_ACCOUNT_SID, creds.TWILIO_AUTH_TOKEN);
+var nodemailer = require('nodemailer');
+
+// create email-sender with nodemailer using Google OAuth2
+var transporter = nodemailer.createTransport({
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true,
+    auth: {
+        type: 'OAuth2',
+        user: creds.MAIL_ADDRESS,
+        clientId: creds.MAIL_CLIENT_ID,
+        clientSecret: creds.MAIL_CLIENT_SECRET,
+        refreshToken: creds.MAIL_REFRESH_TOKEN,
+        accessToken: creds.MAIL_ACCESS_TOKEN
+    }
+});
 
 // TA Class
-function TA(_name, _phone, _email) {
+function TA(_name, _phone, _email, _XBlockTime) {
 	// store name, phone & email
 	this.name = _name;
 	this.phone = _phone;
 	this.email = _email;
+	this.xBlockTime = _XBlockTime;
 
 	// make name, phone, and email data accessible inside TA class methods
 	var self = this;
 
 	// notify this TA via SMS
 	this.notifySMS = function() {
-		// placeholder SMS function
+		// debug
 		console.log("Sending SMS to " + self.name + " at " + self.phone);
+
+		var message;
+
+		// if we know when X Block is (we always should)
+		if (self.xBlockTime) {
+			// incorporate X Block time into message
+			message = "Hey " + self.name + "! You have CSTA hours today at " + self.xBlockTime.format('h:mm A') + " (" + self.xBlockTime.fromNow() + ")";
+		} else {
+			// fallback on non-specific reminder message
+			message = "Hey " + self.name + "! You have CSTA hours today!";
+		}
+
+		// use twilio to send to message to TA
+		twilio.messages
+			.create({
+				body: message,
+				to: self.phone,
+				from: creds.TWILIO_NUMBER
+			})
+			.then(message => console.log(message.sid));
 	}
 
 	// notify this TA via email
 	this.notifyEmail = function() {
-		// placeholder email function
+		// debug
 		console.log("Sending email to " + self.name + " at " + self.email);
+
+		// format the X Block start time into a string
+		var xTime = self.xBlockTime.format('h:mm A');
+
+		// configure message settings / content
+		var options = {
+			to: self.email,
+			from: creds.MAIL_ADDRESS,
+			subject: "CSTA Hours Today! (" + xTime + ")",
+			text: "Hey " + self.name + "!\n\nYou have hours today at " + xTime + " (" + self.xBlockTime.fromNow() + ").\n\nLove,\nCSTA Reminder Service";
+			html: ""
+		};
+
+		// use nodemailer transporter to send email to TA
+		transporter.sendMail(options);
 	}
 }
 
@@ -91,7 +145,7 @@ function scheduleAllNotifications(cb) {
 
 								// construct TA object for each TA on hours today, use to schedule calls to notification functions
 								for (var i = 0; i < rows.length; i++) {
-									ta = new TA(rows[i].name, rows[i].phone, rows[i].email);
+									ta = new TA(rows[i].name, rows[i].phone, rows[i].email, XBlock);
 
 									console.log("Scheduling notifications for " + ta.name + "...");
 
@@ -172,11 +226,3 @@ function parsePreXTimes(durations, XTime) {
 
 	return result;
 }
-
-
-
-
-// just testing it right now
-scheduleAllNotifications(function(err) {
-	console.log(err);
-});
