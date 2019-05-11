@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Hours Assignments</title>
+<!-- 	<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+	<link rel="stylesheet" href="/resources/demos/style.css"> -->
+	<style>
+
+	/* align table elements at the top, instead of center */
+	td {
+		vertical-align: top;
+	}
+
+	.letterDay {
+		border: 1px solid #eee;
+		width: 142px;
+		min-height: 20px;
+		list-style-type: none;
+		margin: 0;
+		padding: 5px 0 0 0;
+		float: left;
+		margin-right: 10px;
+	}
+
+	.letterDay li {
+		margin: 0 5px 5px 5px;
+		padding: 5px;
+		font-size: 1.2em;
+		width: 120px;
+	}
+
+	</style>
+	<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+	<script>
+	$(function() {
+		var duplicating = false;	// should TA's be duplicated when moved? (leave copy in previous letter day)
+		var deleting = false;		// should TA be deleted when clicked?
+
+		// toggle duplication when CTRL key held
+		$(window).keydown(function(evt) {
+			if (evt.which == 17) { // ctrl
+				duplicating = true;
+			} else if (evt.which == 16) {	// shift
+				deleting = true;
+			}
+		}).keyup(function(evt) {
+			if (evt.which == 17) { // ctrl
+				duplicating = false;
+			} else if (evt.which == 16) {	// shift
+				deleting = false;
+			}
+		});
+
+		// alphabetically sort the master list
+		function sortMasterList() {
+			var masterList = $('#masterList');
+			var listitems = masterList.children('li').get();
+			listitems.sort(function(a, b) {
+			   return $(a).text().toUpperCase().localeCompare($(b).text().toUpperCase());
+			})
+			$.each(listitems, function(idx, itm) { masterList.append(itm); });
+		}
+
+		// make letterDay lists sortable elements with dragging
+		$( ".letterDay" ).sortable({
+			connectWith: ".connectedSortable",
+			remove: function(event, ui) {
+				// determine if the moved element is from the master list (if so, duplicate automatically to keep master list full)
+				var masterTAList = $(ui.item).attr('class').includes('master-ta');
+
+				// if duplicating a TA for doubling (tripling, etc) on hours (CTRL key held)
+				if (duplicating || masterTAList) {
+					// clone the TA before moving so there are now two copies
+                	ui.item.clone(true).appendTo($(this));
+               	}
+
+               	// reset the class of the moved element to ta-only, ensure NOT master-ta
+               	ui.item.attr('class', 'ta ui-state-default ui-sortable-handle');
+
+				// handle changes here
+				getState();
+
+				// preserve alphabetical order of master list, even after appending the clone
+				sortMasterList();
+
+               	// USE THIS TO DO THE RESTRICTED VERSION OF UI
+                // $(this).sortable('cancel');
+            }
+		}).disableSelection();
+
+		// when a TA element is clicked
+		$('.ta').click(function() {
+			var isInMasterList = $(this).attr('class').includes('master-ta');
+			// if in deletion mode, remove element (but only if deleting from a letter day, and not the master list)
+			if (deleting && !isInMasterList) {
+				$(this).remove();
+			}
+		});
+
+		// determine who is assigned to which letter days
+		function getState() {
+			var assignments = [];
+
+			// for each letter day element
+			$('#letterDayCalendar').find('ul').each(function(i, letterDay) {
+				// extract letter day UID
+				var letterUID = $(letterDay).data('letter-uid');
+				var TAs = [];
+
+				// for each TA element contained within this letter day list
+				$(letterDay).find('li').each(function(j, ta) {
+					// extract TA UID
+					var taUID = $(ta).data('ta-uid');
+
+					// if TA occurs more than once within same letter day, remove any redundant entries
+					if (TAs.indexOf(taUID) != -1) {
+						// remove duplicate element
+						$(ta).remove();
+					} else {
+						// remember that this TA is assigned to this day
+						TAs.push(taUID);
+
+						// add all assignments, excluding the master list
+						if (letterUID != -1) {
+							// add assignment to list
+							assignments.push([taUID, letterUID]);
+						}
+					}
+				});
+			});
+
+			console.log(assignments);
+			return assignments;
+		}
+
+
+		$('#submit').click(function() {
+			// get the current assignments
+			var assgn = getState();
+		})
+
+		// start master list as alphabetically sorted
+		sortMasterList();
+	});
+	</script>
+</head>
+<body>
+	<!-- container for all letter day lists -->
+	<div id="letterDayCalendar">
+		<table>
+			<!-- letter day titles -->
+			<tr>
+				<th>Day A</th>
+				<th>Day B</th>
+				<th>Day C</th>
+				<th>Day D</th>
+				<th>Day E</th>
+				<th>Day F</th>
+				<th>TA Master List</th>
+			</tr>
+
+			<!-- current assignments -->
+			<tr>
+				<td>
+					<ul data-letter-uid="1" class="connectedSortable letterDay">
+						<li data-ta-uid="250" class="ta ui-state-default">Andy W</li>
+						<li data-ta-uid="252" class="ta ui-state-default">Jerry C</li>
+					</ul>
+				</td>
+				<td>
+					<ul data-letter-uid="2" class="connectedSortable letterDay">
+						<li data-ta-uid="212" class="ta ui-state-default">Anders K</li>
+						<li data-ta-uid="3" class="ta ui-state-default">Katie D</li>
+					</ul>
+				</td>
+				<td>
+					<ul data-letter-uid="3" class="connectedSortable letterDay">
+						<li data-ta-uid="412" class="ta ui-state-default">Sebastian C</li>
+					</ul>
+				</td>
+				<td>
+					<ul data-letter-uid="4" class="connectedSortable letterDay">
+						<li data-ta-uid="2104" class="ta ui-state-default">Thomas C</li>
+						<li data-ta-uid="221" class="ta ui-state-default">Zach M</li>
+					</ul>
+				</td>
+				<td>
+					<ul data-letter-uid="5" class="connectedSortable letterDay">
+						<li data-ta-uid="281" class="ta ui-state-default">Cole A</li>
+					</ul>
+				</td>
+				<td>
+					<ul data-letter-uid="6" class="connectedSortable letterDay">
+						<li data-ta-uid="260" class="ta ui-state-default">Liza K</li>
+						<li data-ta-uid="267" class="ta ui-state-default">Johnny L</li>
+					</ul>
+				</td>
+				<td>
+					<ul data-letter-uid="-1" id="masterList" class="connectedSortable letterDay">
+						<li data-ta-uid="250" class="master-ta ta ui-state-default">Andy W</li>
+						<li data-ta-uid="252" class="master-ta ta ui-state-default">Jerry C</li>
+						<li data-ta-uid="212" class="master-ta ta ui-state-default">Anders K</li>
+						<li data-ta-uid="3" class="master-ta ta ui-state-default">Katie D</li>
+						<li data-ta-uid="412" class="master-ta ta ui-state-default">Sebastian C</li>
+						<li data-ta-uid="2104" class="master-ta ta ui-state-default">Thomas C</li>
+						<li data-ta-uid="221" class="master-ta ta ui-state-default">Zach M</li>
+						<li data-ta-uid="281" class="master-ta ta ui-state-default">Cole A</li>
+						<li data-ta-uid="260" class="master-ta ta ui-state-default">Liza K</li>
+						<li data-ta-uid="267" class="master-ta ta ui-state-default">Johnny L</li>
+						<li data-ta-uid="311" class="master-ta ta ui-state-default">Eddy C</li>
+						<li data-ta-uid="510" class="master-ta ta ui-state-default">Anika V</li>
+						<li data-ta-uid="512" class="master-ta ta ui-state-default">Hewson D</li>
+					</ul>
+				</td>
+			</tr>
+		</table>
+	</div>
+
+	<br><br>
+	<button id="submit">Get assignments</button>
+</body>
+</html>
