@@ -4,162 +4,167 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>Hours Assignments</title>
-<!-- 	<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-	<link rel="stylesheet" href="/resources/demos/style.css"> -->
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
+	<!-- <link href="https://code.jquery.com/ui/1.10.4/themes/ui-lightness/jquery-ui.css" rel="stylesheet"> -->
+	<link href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" rel="stylesheet">
+	<!-- <link rel="stylesheet" href="/resources/demos/style.css"> -->
 	<style>
+		/* align table elements at the top, instead of center */
+		td {
+			vertical-align: top;
+		}
 
-	/* align table elements at the top, instead of center */
-	td {
-		vertical-align: top;
-	}
+		.letterDay {
+			border: 1px solid #eee;
+			width: 142px;
+			min-height: 20px;
+			list-style-type: none;
+			margin: 0;
+			padding: 5px 0 0 0;
+			float: left;
+			margin-right: 10px;
+		}
 
-	.letterDay {
-		border: 1px solid #eee;
-		width: 142px;
-		min-height: 20px;
-		list-style-type: none;
-		margin: 0;
-		padding: 5px 0 0 0;
-		float: left;
-		margin-right: 10px;
-	}
-
-	.letterDay li {
-		margin: 0 5px 5px 5px;
-		padding: 5px;
-		font-size: 1.2em;
-		width: 120px;
-	}
-
+		.letterDay li {
+			margin: 0 5px 5px 5px;
+			padding: 5px;
+			font-size: 1.2em;
+			width: 120px;
+		}
 	</style>
 	<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
 	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 	<script>
-	$(function() {
-		var duplicating = false;	// should TA's be duplicated when moved? (leave copy in previous letter day)
-		var deleting = false;		// should TA be deleted when clicked?
-
-		// toggle duplication when CTRL key held
-		$(window).keydown(function(evt) {
-			if (evt.which == 17) { // ctrl
-				duplicating = true;
-			} else if (evt.which == 16) {	// shift
-				deleting = true;
-			}
-		}).keyup(function(evt) {
-			if (evt.which == 17) { // ctrl
-				duplicating = false;
-			} else if (evt.which == 16) {	// shift
-				deleting = false;
-			}
-		});
-
-		// alphabetically sort the master list
-		function sortMasterList() {
-			var masterList = $('#masterList');
-			var listitems = masterList.children('li').get();
-			listitems.sort(function(a, b) {
-			   return $(a).text().toUpperCase().localeCompare($(b).text().toUpperCase());
-			})
-			$.each(listitems, function(idx, itm) { masterList.append(itm); });
-		}
-
-		// make letterDay lists sortable elements with dragging
-		$( ".letterDay" ).sortable({
-			connectWith: ".connectedSortable",
-			remove: function(event, ui) {
-				// determine if the moved element is from the master list (if so, duplicate automatically to keep master list full)
-				var masterTAList = $(ui.item).attr('class').includes('master-ta');
-
-				// if duplicating a TA for doubling (tripling, etc) on hours (CTRL key held)
-				if (duplicating || masterTAList) {
-					// clone the TA before moving so there are now two copies
-                	ui.item.clone(true).appendTo($(this));
-               	}
-
-               	// ensure item moved out of master list does not have master-ta class
-               	$(ui.item).removeClass('master-ta');
-
-               	// check the state of assignments (this also removes duplicates)
-               	getState();
-
-				// preserve alphabetical order of master list, even after appending the clone
-				sortMasterList();
-            }
-		}).disableSelection();
-
-		// when a TA element is clicked
-		$('.ta').click(function() {
-			var isInMasterList = $(this).attr('class').includes('master-ta');
-			// if in deletion mode, remove element (but only if deleting from a letter day, and not the master list)
-			if (deleting && !isInMasterList) {
-				$(this).remove();
-			}
-		});
-
-		// determine who is assigned to which letter days
-		function getState() {
-			var assignments = [];
-
-			// for each letter day element
-			$('#letterDayCalendar').find('ul').each(function(i, letterDay) {
-				// extract letter day UID
-				var letterUID = $(letterDay).data('letter-uid');
-				var TAs = [];
-
-				// determine if in master list
-				var masterList = $(letterDay).data('letter-uid') == -1;
-
-				// for each TA element contained within this letter day list
-				$(letterDay).find('li').each(function(j, ta) {
-					// extract TA UID
-					var taUID = $(ta).data('ta-uid');
-
-					// if TA occurs more than once within same letter day, remove any redundant entries
-					if (TAs.indexOf(taUID) != -1) {
-						// remove duplicate element
-						$(ta).remove();
-					} else {
-						// if parsing master list
-						if (masterList) {
-							// ensure each element has master-ta class (non-deletable)
-							$(ta).addClass('master-ta');
-						}
-
-						// remember that this TA is assigned to this day
-						TAs.push(taUID);
-
-						// add all assignments, excluding the master list
-						if (letterUID != -1) {
-							// add assignment to list
-							assignments.push([taUID, letterUID]);
-						}
-					}
-				});
+		$(function() {
+			// toggle the more info window when button clicked
+			$('#toggleMoreInfo').click(function(){
+				$('#moreInfo').slideToggle();
 			});
 
-			return assignments;
-		}
+			var duplicating = false;	// should TA's be duplicated when moved? (leave copy in previous letter day)
+			var deleting = false;		// should TA be deleted when clicked?
 
-		// post the updated assignments to be applied
-		$('#updateAssignments').click(function() {
-			// get the current assignments
-			var assgn = getState();
+			// toggle duplication when CTRL key held
+			$(window).keydown(function(evt) {
+				if (evt.which == 17) { // ctrl
+					duplicating = true;
+				} else if (evt.which == 16) {	// shift
+					deleting = true;
+				}
+			}).keyup(function(evt) {
+				if (evt.which == 17) { // ctrl
+					duplicating = false;
+				} else if (evt.which == 16) {	// shift
+					deleting = false;
+				}
+			});
 
-			// post new assignments 
-			$.post('/updateAssignments', { assignments: assgn })
-				.done(function(err) {
-					if (!err) {
-						alert("Successfully saved hours assignments.");
-					} else {
-						alert("Error: " + err);
-					}
+			// alphabetically sort the master list
+			function sortMasterList() {
+				var masterList = $('#masterList');
+				var listitems = masterList.children('li').get();
+				listitems.sort(function(a, b) {
+				   return $(a).text().toUpperCase().localeCompare($(b).text().toUpperCase());
+				})
+				$.each(listitems, function(idx, itm) { masterList.append(itm); });
+			}
+
+			// make letterDay lists sortable elements with dragging
+			$( ".letterDay" ).sortable({
+				connectWith: ".connectedSortable",
+				remove: function(event, ui) {
+					// determine if the moved element is from the master list (if so, duplicate automatically to keep master list full)
+					var masterTAList = $(ui.item).attr('class').includes('master-ta');
+
+					// if duplicating a TA for doubling (tripling, etc) on hours (CTRL key held)
+					if (duplicating || masterTAList) {
+						// clone the TA before moving so there are now two copies
+	                	ui.item.clone(true).appendTo($(this));
+	               	}
+
+	               	// ensure item moved out of master list does not have master-ta class
+	               	$(ui.item).removeClass('master-ta');
+
+	               	// check the state of assignments (this also removes duplicates)
+	               	getState();
+
+					// preserve alphabetical order of master list, even after appending the clone
+					sortMasterList();
+	            }
+			}).disableSelection();
+
+			// when a TA element is clicked
+			$('.ta').click(function() {
+				var isInMasterList = $(this).attr('class').includes('master-ta');
+				// if in deletion mode, remove element (but only if deleting from a letter day, and not the master list)
+				if (deleting && !isInMasterList) {
+					$(this).remove();
+				}
+			});
+
+			// determine who is assigned to which letter days
+			function getState() {
+				var assignments = [];
+
+				// for each letter day element
+				$('#letterDayCalendar').find('ul').each(function(i, letterDay) {
+					// extract letter day UID
+					var letterUID = $(letterDay).data('letter-uid');
+					var TAs = [];
+
+					// determine if in master list
+					var masterList = $(letterDay).data('letter-uid') == -1;
+
+					// for each TA element contained within this letter day list
+					$(letterDay).find('li').each(function(j, ta) {
+						// extract TA UID
+						var taUID = $(ta).data('ta-uid');
+
+						// if TA occurs more than once within same letter day, remove any redundant entries
+						if (TAs.indexOf(taUID) != -1) {
+							// remove duplicate element
+							$(ta).remove();
+						} else {
+							// if parsing master list
+							if (masterList) {
+								// ensure each element has master-ta class (non-deletable)
+								$(ta).addClass('master-ta');
+							}
+
+							// remember that this TA is assigned to this day
+							TAs.push(taUID);
+
+							// add all assignments, excluding the master list
+							if (letterUID != -1) {
+								// add assignment to list
+								assignments.push([taUID, letterUID]);
+							}
+						}
+					});
 				});
-		})
 
-		// start master list as alphabetically sorted
-		sortMasterList();
-	});
+				return assignments;
+			}
+
+			// post the updated assignments to be applied
+			$('#updateAssignments').click(function() {
+				// get the current assignments
+				var assgn = getState();
+
+				// post new assignments 
+				$.post('/updateAssignments', { assignments: assgn })
+					.done(function(err) {
+						if (!err) {
+							alert("Successfully saved hours assignments.");
+						} else {
+							alert("Error: " + err);
+						}
+					});
+			});
+
+			// start master list as alphabetically sorted
+			sortMasterList();
+		});
 	</script>
 </head>
 <body>
@@ -172,6 +177,21 @@
 				<li><a href="/logout">Log Out <i class="fas fa-sign-out-alt"></i></a></li>
 			</div>
 		</ul>
+	</div>
+
+	<!-- button to apply hours assignments updates -->
+	<button id="updateAssignments">Apply Updates</button>
+
+	<h1>Hours Schedule</h1>
+
+	<!-- more info window -->
+	<button id="toggleMoreInfo">More Info</button>
+	<div id="moreInfo" hidden>
+		<p>Click and drag to reschedule TA's.</p>
+		<p>Holding <strong>shift</strong> and clicking will remove a given assignment.</p>
+		<p>Holding <strong>control</strong> while you drag a TA will duplicate their assignment block (doubling up on hours)</p>
+		<p>TA's can also be dragged in from the TA Master List</p>
+		<p>When you are finished making changes, press the <strong>Apply Updates</strong> button</p>
 	</div>
 
 	<!-- container for all letter day lists -->
@@ -206,8 +226,5 @@
 			</tr>
 		</table>
 	</div>
-
-	<br><br>
-	<button id="updateAssignments">Apply Updates</button>
 </body>
 </html>
