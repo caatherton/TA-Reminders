@@ -148,6 +148,26 @@ module.exports = {
 		} else {
 			res.redirect('/');
 		}
-	}
+	},
 
+	// estalbish default authentication info on user within render object
+	defaultRender: function(req) {
+		if (req.isAuthenticated() && req.user && req.user.local) {
+			// basic render object for fully authenticated user
+			return {
+				auth: {
+					isAuthenticated: true,
+					userIsAdmin: req.user.local.isAdmin,
+					message: "Welcome, " + req.user.name.givenName + "! (" + req.user.local.email + ")"
+				}
+			};
+		} else {
+			// default welcome message for unauthenticated user
+			return {
+				auth: {
+					message: "Welcome!"
+				}
+			};
+		}
+	}
 }

@@ -80,8 +80,8 @@
                	// reset the class of the moved element to ta-only, ensure NOT master-ta
                	ui.item.attr('class', 'ta ui-state-default ui-sortable-handle');
 
-				// handle changes here
-				getState();
+               	// check the state of assignments (this also removes duplicates)
+               	getState();
 
 				// preserve alphabetical order of master list, even after appending the clone
 				sortMasterList();
@@ -141,7 +141,17 @@
 			// get the current assignments
 			var assgn = getState();
 
-			console.log("POSTING ASSIGNMENTS");
+			console.log(assgn);
+
+			// post new assignments 
+			$.post('/updateAssignments', { assignments: assgn })
+				.done(function(err) {
+					if (!err) {
+						alert("Successfully saved hours assignments.");
+					} else {
+						alert("Error: " + err);
+					}
+				});
 		})
 
 		// start master list as alphabetically sorted
@@ -150,6 +160,17 @@
 	</script>
 </head>
 <body>
+	<div class="navbar">
+		<ul>
+			<li><a href="/">Hours Schedule</a></li>
+			<li><a href="/admin">Admin Portal</a></li>
+			<div style="float:right">
+				<li id="authMessage"><a href="#">{{auth.message}}</a></li>
+				<li><a href="/logout">Log Out <i class="fas fa-sign-out-alt"></i></a></li>
+			</div>
+		</ul>
+	</div>
+
 	<!-- container for all letter day lists -->
 	<div id="letterDayCalendar">
 		<table>
@@ -167,7 +188,7 @@
 				<td>
 					<ul data-letter-uid="{{letterUID}}" class="connectedSortable letterDay">
 					{{#assignedTAs}}
-						<li data-ta-uid="{{taUID}}" class="ta ui-state-default">{{name}}</li>
+						<li data-ta-uid="{{taUID}}" class="ta ui-state-default">{{name}} ({{type}})</li>
 					{{/assignedTAs}}
 					</ul>
 				</td>
@@ -175,7 +196,7 @@
 				<td>
 					<ul data-letter-uid="-1" id="masterList" class="connectedSortable letterDay">
 					{{#TAs}}
-						<li data-ta-uid="{{uid}}" class="master-ta ta ui-state-default">{{name}}</li>
+						<li data-ta-uid="{{uid}}" class="master-ta ta ui-state-default">{{name}} ({{type}})</li>
 					{{/TAs}}
 					</ul>
 				</td>

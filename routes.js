@@ -7,7 +7,7 @@ module.exports = {
 	init: function(app) {
 
 		app.get('/', auth.isAuthGET, (req, res) => {
-			var render = {};
+			var render = auth.defaultRender(req);
 
 			// if user is admin
 			if (req.user.local.isAdmin) {
@@ -40,13 +40,14 @@ module.exports = {
 			} else {
 
 				// handle for non-admins here
+				res.send("non-admin");
 
 			}
 		});
 
 		// admin portal
 		app.get('/admin', auth.isAdminGET, (req, res) => {
-			var render = {};
+			var render = auth.defaultRender(req);
 
 			// get TA info
 			db.getTAs(function(err, TAs) {
@@ -83,9 +84,9 @@ module.exports = {
 					// on success, redirect to admin portal
 					res.redirect('/admin');
 				} else {
-					res.render('error.html', {
+					res.render('error.html', Object.assign(auth.defaultRender(req), {
 						message: "Failed to add a new TA user: " + err
-					});
+					}));
 				}
 			});
 		});
@@ -106,9 +107,9 @@ module.exports = {
 					// on succes, redirect to admin portal
 					res.redirect('/admin');
 				} else {
-					res.render('error.html', {
+					res.render('error.html', Object.assign(auth.defaultRender(req), {
 						message: "Failed to add new letter day: " + err
-					});
+					}));
 				}
 			});
 		});
@@ -129,9 +130,9 @@ module.exports = {
 					// on success, redirect to admin portal
 					res.redirect('/admin');
 				} else {
-					res.render('error.html', {
+					res.render('error.html', Object.assign(auth.defaultRender(req), {
 						message: "Failed to add new admin: " + err
-					});
+					}));
 				}
 			});
 		});
@@ -147,6 +148,17 @@ module.exports = {
 			} else {
 				res.send({ err: "You are unable to deauthorize yourself as an administrator." });
 			}
+		});
+
+		// update the hours assignments
+		app.post('/updateAssignments', auth.isAdminPOST, (req, res) => {
+			// default to empty array (clearing assignments) if undefined
+			req.body.assignments = req.body.assignments || [];
+
+			// update assignments with those given
+			db.updateAssignments(req.body.assignments, function(err) {
+				res.send(err);
+			});
 		});
 
 

@@ -101,10 +101,15 @@ module.exports = {
 			// clear out existing assignments
 			con.query('DELETE FROM letterDayAssgn;', function(err) {
 				if (!err) {
-					// insert fresh assignments into table
-					con.query('INSERT INTO letterDayAssgn (taUID, letterUID) VALUES ?;', [assignments], function(err) {
-						cb(err);
-					});
+					// if there are assignments to insert
+					if (assignments.length > 0) {
+						// insert fresh assignments into table
+						con.query('INSERT INTO letterDayAssgn (taUID, letterUID) VALUES ?;', [assignments], function(err) {
+							cb(err);
+						});
+					} else {
+						cb();
+					}
 				} else {
 					cb(err);
 				}
