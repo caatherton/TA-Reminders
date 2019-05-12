@@ -38,11 +38,12 @@ h1 {
 
 #toggleMoreInfo:hover {
 	cursor: pointer;
+	color: #e6e6e6;
 }
 
 #moreInfo {
-	margin: 20px;
-	font-size: 15px;
+	margin: 10px;
+	font-size: 16px;
 	color: white;
 	text-shadow: #000000 2px 0 10px;
 }
@@ -54,12 +55,12 @@ h1 {
 	padding: 8px;
 	border: none;
 	border-radius: 4px;
-	background-color: #00e600;
+	background-color: #e600e6;
 	color: white;
 }
 
 #updateAssignments:hover {
-	background-color: #00ff00;
+	background-color: #ff00ff;
 	cursor: pointer;
 }
 
@@ -92,6 +93,14 @@ th {
 	text-shadow: #000000 2px 0 10px;
 }
 
+th, td {
+	/* make all text non-selectable */
+	-webkit-user-select: none;  /* Chrome all / Safari all */
+	-moz-user-select: none;     /* Firefox all */
+	-ms-user-select: none;      /* IE 10+ */
+	user-select: none;          /* Likely future */ 
+}
+
 table {
 	margin: auto;
 }
@@ -99,6 +108,10 @@ table {
 li.ta {
 	font-size: 14px;
 	border-radius: 3px;
+}
+
+li.ta:hover {
+	cursor: pointer;
 }
 
 #masterList {
