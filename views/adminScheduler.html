@@ -77,17 +77,14 @@
                 	ui.item.clone(true).appendTo($(this));
                	}
 
-               	// reset the class of the moved element to ta-only, ensure NOT master-ta
-               	ui.item.attr('class', 'ta ui-state-default ui-sortable-handle');
+               	// ensure item moved out of master list does not have master-ta class
+               	$(ui.item).removeClass('master-ta');
 
                	// check the state of assignments (this also removes duplicates)
                	getState();
 
 				// preserve alphabetical order of master list, even after appending the clone
 				sortMasterList();
-
-               	// USE THIS TO DO THE RESTRICTED VERSION OF UI
-                // $(this).sortable('cancel');
             }
 		}).disableSelection();
 
@@ -110,6 +107,9 @@
 				var letterUID = $(letterDay).data('letter-uid');
 				var TAs = [];
 
+				// determine if in master list
+				var masterList = $(letterDay).data('letter-uid') == -1;
+
 				// for each TA element contained within this letter day list
 				$(letterDay).find('li').each(function(j, ta) {
 					// extract TA UID
@@ -120,6 +120,12 @@
 						// remove duplicate element
 						$(ta).remove();
 					} else {
+						// if parsing master list
+						if (masterList) {
+							// ensure each element has master-ta class (non-deletable)
+							$(ta).addClass('master-ta');
+						}
+
 						// remember that this TA is assigned to this day
 						TAs.push(taUID);
 
@@ -132,7 +138,6 @@
 				});
 			});
 
-			console.log(assignments);
 			return assignments;
 		}
 
@@ -140,8 +145,6 @@
 		$('#updateAssignments').click(function() {
 			// get the current assignments
 			var assgn = getState();
-
-			console.log(assgn);
 
 			// post new assignments 
 			$.post('/updateAssignments', { assignments: assgn })

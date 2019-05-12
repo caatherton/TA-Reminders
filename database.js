@@ -119,6 +119,26 @@ module.exports = {
 		}
 	},
 
+	// update the hours assignments of an individual TA, without affecting anyone else's hours
+	updateIndivAssignments: function(taUID, assignments, cb) {
+		// clear assignments table of all records pertaining to this TA
+		con.query('DELETE FROM letterDayAssgn WHERE taUID = ?;', [taUID], function(err) {
+			if (!err) {
+				// if there are new assignments to add (could be empty)
+				if (assignments.length > 0) {
+					// insert the updated assignment records for this TA
+					con.query('INSERT INTO letterDayAssgn (taUID, letterUID) VALUES ?;', [assignments], function(err) {
+						cb(err);
+					});
+				} else {
+					cb();
+				}
+			} else {
+				cb(err);
+			}
+		});
+	},
+
 	// add a new TA user
 	addTA: function(name, phone, email, type, cb) {
 		// ensure fields are defined

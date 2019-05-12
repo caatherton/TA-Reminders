@@ -6,46 +6,50 @@ var auth = require('./auth.js');
 module.exports = {
 	init: function(app) {
 
+		// render calendar interface for editing hours assignments for either admin or TA
 		app.get('/', auth.isAuthGET, (req, res) => {
 			var render = auth.defaultRender(req);
 
-			// if user is admin
-			if (req.user.local.isAdmin) {
-				// get hours assignments
-				db.getAssignments(function(err, assgn) {
-					if (!err) {
-						render.days = assgn;
+			// get hours assignments
+			db.getAssignments(function(err, assgn) {
+				if (!err) {
+					// store assignments in render obj
+					render.days = assgn;
 
-						// get TA profiles
-						db.getTAs(function(err, TAs) {
-							if (!err) {
-								render.TAs = TAs;
+					// get TA profiles
+					db.getTAs(function(err, TAs) {
+						if (!err) {
+							// store profiles in render obj
+							render.TAs = TAs;
 
+							// render admin interface for admins
+							if (req.user.local.isAdmin) {
 								// render calendar interface
-								res.render('ui.html', render);
+								res.render('adminScheduler.html', render);
 							} else {
-								// render error
-								res.render('error.html', {
-									message: "The system was unable to retrieve profile information for all TAs."
-								});
+								// store this TA's system info in render object
+								render.user = req.user.local;
+
+								// render hours scheduler for TAs
+								res.render('TAScheduler.html', render);
 							}
-						});
-					} else {
-						// render error
-						res.render('error.html', {
-							message: "The system was unable to retrieve the hours assignments from the database."
-						});
-					}
-				});
-			} else {
-
-				// handle for non-admins here
-				res.send("non-admin");
-
-			}
+						} else {
+							// render error
+							res.render('error.html', {
+								message: "The system was unable to retrieve profile information for all TAs."
+							});
+						}
+					});
+				} else {
+					// render error
+					res.render('error.html', {
+						message: "The system was unable to retrieve the hours assignments from the database."
+					});
+				}
+			});
 		});
 
-		// admin portal
+		// show admin portal
 		app.get('/admin', auth.isAdminGET, (req, res) => {
 			var render = auth.defaultRender(req);
 
@@ -161,6 +165,25 @@ module.exports = {
 			});
 		});
 
+		// update the hours assignments of a given TA
+		app.post('/updateIndivAssignments', auth.isAuthPOST, (req, res) => {
+			// parse body
+			var assgn = req.body.assignments || [], toApply = [];
+			var taUID = req.user.local.uid;
+
+			// filter out any assignments that do not involve this TA
+			for (var i = 0; i < assgn.length; i++) {
+				if (assgn[i].length == 2 && assgn[i][0] == taUID && assgn[i][1] > 0) {
+					toApply.push(assgn[i]);
+				}
+			}
+
+			// apply updates to this TA's assignments
+			db.updateIndivAssignments(taUID, toApply, function(err) {
+				// respond with error, if any
+				res.send(err);
+			});
+		});
 
 		return module.exports;
 	}
