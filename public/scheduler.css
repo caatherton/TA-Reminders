@@ -1,0 +1,92 @@
+
+/*
+	CSS for scheduler calendar
+*/
+
+body {
+	background-image: url('/greenway-bg.jpg');
+	height: 1050px; 
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size: cover;
+	text-align: center;
+}
+
+h1 {
+	clear: both;
+	color: white;
+	font-size: 40px;
+	text-align: center;
+	text-shadow: #000000 2px 0 10px;
+}
+
+#toggleMoreInfo {
+	padding: 5px;
+	margin-bottom: 5px;
+	border: none;
+	border-radius: 4px;
+	font-size: 16px;
+    background-color: Transparent;
+    background-repeat:no-repeat;
+    border: none;
+    cursor:pointer;
+    overflow: hidden;
+    outline:none;
+    color: white;
+}
+
+#toggleMoreInfo:hover {
+	cursor: pointer;
+}
+
+#moreInfo {
+	margin: 20px;
+	font-size: 15px;
+	color: white;
+	text-shadow: #000000 2px 0 10px;
+}
+
+#updateAssignments {
+	font-size: 16px;
+	float:left;
+	margin: 10px;
+	padding: 8px;
+	border: none;
+	border-radius: 4px;
+	background-color: #00e600;
+	color: white;
+}
+
+#updateAssignments:hover {
+	background-color: #00ff00;
+	cursor: pointer;
+}
+
+/* align table elements at the top, instead of center */
+td {
+	vertical-align: top;
+}
+
+th {
+	font-size: 18px;
+	color: white;
+	text-shadow: #000000 2px 0 10px;
+}
+
+table {
+	margin: auto;
+}
+
+li.ta {
+	font-size: 15px;
+	border-radius: 3px;
+}
+
+#masterList {
+	border: none;
+	background-color: #8c8c8c;
+}
+
+.letterDay {
+	border-radius: 5px;
+}

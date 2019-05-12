@@ -2,6 +2,10 @@
 <html>
 <head>
 	<title>Administrator Tools</title>
+	<link rel="stylesheet" type="text/css" href="/reset.css">
+	<link rel="stylesheet" type="text/css" href="/main.css">
+	<link rel="stylesheet" type="text/css" href="/navbar.css">
+	<link rel="stylesheet" type="text/css" href="/admin.css">
 	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
 	<script type="text/javascript">
@@ -60,18 +64,17 @@
 <body>
 	<div class="navbar">
 		<ul>
-			<li><a href="/">Hours Schedule</a></li>
-			<li><a href="/admin">Admin Portal</a></li>
+			<li><a href="/"><i class="leftIcon fas fa-calendar-alt"></i> Hours Schedule</a></li>
+			<li><a href="/admin"><i class="leftIcon fas fa-user-shield"></i> Admin Portal</a></li>
 			<div style="float:right">
 				<li id="authMessage"><a href="#">{{auth.message}}</a></li>
-				<li><a href="/logout">Log Out <i class="fas fa-sign-out-alt"></i></a></li>
+				<li><a href="/logout">Log Out <i class="rightIcon fas fa-sign-out-alt"></i></a></li>
 			</div>
 		</ul>
 	</div>
 
-	<a href="/">Back to Hours Schedule</a>
 	<h1>Teaching Assistants</h1>
-	<table>
+	<table id="ta-table">
 		<tr>
 			<th>Name</th>
 			<th>Email</th>
@@ -84,7 +87,7 @@
 			<td>{{email}}</td>
 			<td>{{phone}}</td>
 			<td>{{type}}</td>
-			<td><button onclick="removeTA({{uid}}, '{{name}}');">Remove</button></td>
+			<td><button onclick="removeTA({{uid}}, '{{name}}');" class="remove"><i class="fas fa-trash"></i></button></td>
 		</tr>
 		{{/TAs}}
 		
@@ -95,54 +98,57 @@
 				<td><input name="email" type="text" placeholder="Email"></td>
 				<td><input name="phone" type="text" placeholder="Phone"></td>
 				<td><input name="type" type="text" placeholder="Type"></td>
-				<td><button>Add New</button></td>
+				<td><button class="new"><i class="fas fa-plus"></i></button></td>
 			</tr>
 		</form>
 	</table>
 
-	<h1>Letter Days</h1>
-	<table>
-		<tr>
-			<th>Letter</th>
-		</tr>
-		{{#letterDays}}
-		<tr>
-			<td>{{name}}</td>
-			<td><button onclick="removeLetter({{uid}}, '{{name}}');">Remove</button></td>
-		</tr>
-		{{/letterDays}}
-
-		<!-- post to /newLetterDay to add a new letter day -->
-		<form action="/newLetterDay" method="POST">
+	<div id="days">
+		<h1>Letter Days</h1>
+		<table>
 			<tr>
-				<td><input name="letter" type="text" placeholder="Letter"></td>
-				<td><button>Add New</button></td>
+				<th>Letter</th>
 			</tr>
-		</form>
-	</table>
-
-	<h1>Administrators</h1>
-	<table>
-		<tr>
-			<th>Name</th>
-			<th>Email</th>
-		</tr>
-		{{#admins}}
-		<tr>
-			<td>{{name}}</td>
-			<td>{{email}}</td>
-			<td><button onclick="removeAdmin({{uid}}, '{{name}}');">Remove</button></td>
-		</tr>
-		{{/admins}}
-
-		<!-- post to /newAdmin to add a new administrator -->
-		<form action="/newAdmin" method="POST">
+			{{#letterDays}}
 			<tr>
-				<td><input name="name" type="text" placeholder="Name"></td>
-				<td><input name="email" type="text" placeholder="Email"></td>
-				<td><button>Add New</button></td>
+				<td>{{name}}</td>
+				<td><button onclick="removeLetter({{uid}}, '{{name}}');" class="remove"><i class="fas fa-trash"></i></button></td>
 			</tr>
-		</form>
-	</table>
+			{{/letterDays}}
+
+			<!-- post to /newLetterDay to add a new letter day -->
+			<form action="/newLetterDay" method="POST">
+				<tr>
+					<td><input name="letter" class="letterInput" maxlength="1" type="text" placeholder="Letter"></td>
+					<td><button class="new"><i class="fas fa-plus"></i></button></td>
+				</tr>
+			</form>
+		</table>
+	</div>
+	<div id="admins">
+		<h1>Administrators</h1>
+		<table>
+			<tr>
+				<th>Name</th>
+				<th>Email</th>
+			</tr>
+			{{#admins}}
+			<tr>
+				<td>{{name}}</td>
+				<td>{{email}}</td>
+				<td><button onclick="removeAdmin({{uid}}, '{{name}}');" class="remove"><i class="fas fa-trash"></i></button></td>
+			</tr>
+			{{/admins}}
+
+			<!-- post to /newAdmin to add a new administrator -->
+			<form action="/newAdmin" method="POST">
+				<tr>
+					<td><input name="name" type="text" placeholder="Name"></td>
+					<td><input name="email" type="text" placeholder="Email"></td>
+					<td><button class="new"><i class="fas fa-plus"></i></button></td>
+				</tr>
+			</form>
+		</table>
+	</div>
 </body>
 </html>

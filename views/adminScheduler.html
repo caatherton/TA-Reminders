@@ -4,19 +4,16 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>Hours Assignments</title>
+	<link rel="stylesheet" type="text/css" href="/reset.css">
+	<link rel="stylesheet" type="text/css" href="/main.css">
 	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
 	<!-- <link href="https://code.jquery.com/ui/1.10.4/themes/ui-lightness/jquery-ui.css" rel="stylesheet"> -->
 	<link href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" rel="stylesheet">
 	<!-- <link rel="stylesheet" href="/resources/demos/style.css"> -->
 	<style>
-		/* align table elements at the top, instead of center */
-		td {
-			vertical-align: top;
-		}
-
 		.letterDay {
 			border: 1px solid #eee;
-			width: 142px;
+			width: 152px;
 			min-height: 20px;
 			list-style-type: none;
 			margin: 0;
@@ -29,9 +26,11 @@
 			margin: 0 5px 5px 5px;
 			padding: 5px;
 			font-size: 1.2em;
-			width: 120px;
+			width: 140px;
 		}
 	</style>
+	<link rel="stylesheet" type="text/css" href="/navbar.css">
+	<link rel="stylesheet" type="text/css" href="/scheduler.css">
 	<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
 	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 	<script>
@@ -170,22 +169,21 @@
 <body>
 	<div class="navbar">
 		<ul>
-			<li><a href="/">Hours Schedule</a></li>
-			<li><a href="/admin">Admin Portal</a></li>
+			<li><a href="/"><i class="leftIcon fas fa-calendar-alt"></i> Hours Schedule</a></li>
+			<li><a href="/admin"><i class="leftIcon fas fa-user-shield"></i> Admin Portal</a></li>
 			<div style="float:right">
 				<li id="authMessage"><a href="#">{{auth.message}}</a></li>
-				<li><a href="/logout">Log Out <i class="fas fa-sign-out-alt"></i></a></li>
+				<li><a href="/logout">Log Out <i class="rightIcon fas fa-sign-out-alt"></i></a></li>
 			</div>
 		</ul>
 	</div>
 
 	<!-- button to apply hours assignments updates -->
-	<button id="updateAssignments">Apply Updates</button>
+	<button id="updateAssignments">Apply Updates <i class="rightIcon fas fa-save"></i></button>
 
-	<h1>Hours Schedule</h1>
+	<h1>Hours Schedule <button id="toggleMoreInfo"><i class="fas fa-info-circle"></i></button></h1>
 
 	<!-- more info window -->
-	<button id="toggleMoreInfo">More Info</button>
 	<div id="moreInfo" hidden>
 		<p>Click and drag to reschedule TA's.</p>
 		<p>Holding <strong>shift</strong> and clicking will remove a given assignment.</p>
