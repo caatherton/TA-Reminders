@@ -2,8 +2,134 @@
 <html>
 <head>
 	<title>Administrator Tools</title>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+	<script type="text/javascript">
+		// remove a given TA by UID
+		function removeTA(uid, name) {
+			if (confirm("Are you sure you want to remove " + name + " as a TA?")) {
+				// request to delete this TA
+				$.post('/deleteTA', { uid: uid })
+					.done(function(data) {
+						if (!data.err) {
+							// refresh current page
+							window.location.href = '/admin';
+						} else {
+							// alert an error
+							alert("Unable to remove indicated TA: " + data.err);
+						}
+					});
+			}
+		}
+
+		// remove a given letter day by UID
+		function removeLetter(uid, letter) {
+			if (confirm("Are you sure you want to remove Day " + letter + "?")) {
+				// request to delete this letter
+				$.post('/deleteLetterDay', { uid: uid })
+					.done(function(data) {
+						if (!data.err) {
+							// refresh current page
+							window.location.href = '/admin';
+						} else {
+							// alert an error
+							alert("Unable to remove indicated letter day: " + data.err);
+						}
+					});
+			}
+		}
+
+		// remove a given admin by UID
+		function removeAdmin(uid, name) {
+			if (confirm("Are you sure you want to remove " + name + " as an admin?")) {
+				// request to delete this admin
+				$.post('/deleteAdmin', { uid: uid })
+					.done(function(data) {
+						if (!data.err) {
+							// refresh current page
+							window.location.href = '/admin';
+						} else {
+							// alert an error
+							alert("Unable to remove indicated administrator: " + data.err);
+						}
+					});
+			}
+		}
+	</script>
 </head>
 <body>
-	
+	<h1>Teaching Assistants</h1>
+	<table>
+		<tr>
+			<th>Name</th>
+			<th>Email</th>
+			<th>Phone</th>
+			<th>Type</th>
+		</tr>
+		{{#TAs}}
+		<tr>
+			<td>{{name}}</td>
+			<td>{{email}}</td>
+			<td>{{phone}}</td>
+			<td>{{type}}</td>
+			<td><button onclick="removeTA({{uid}}, '{{name}}');">Remove</button></td>
+		</tr>
+		{{/TAs}}
+		
+		<!-- post to /newTA to create a new TA user -->
+		<form action="/newTA" method="POST">
+			<tr>
+				<td><input name="name" type="text" placeholder="Name"></td>
+				<td><input name="email" type="text" placeholder="Email"></td>
+				<td><input name="phone" type="text" placeholder="Phone"></td>
+				<td><input name="type" type="text" placeholder="Type"></td>
+				<td><button>Add New</button></td>
+			</tr>
+		</form>
+	</table>
+
+	<h1>Letter Days</h1>
+	<table>
+		<tr>
+			<th>Letter</th>
+		</tr>
+		{{#letterDays}}
+		<tr>
+			<td>{{name}}</td>
+			<td><button onclick="removeLetter({{uid}}, '{{name}}');">Remove</button></td>
+		</tr>
+		{{/letterDays}}
+
+		<!-- post to /newLetterDay to add a new letter day -->
+		<form action="/newLetterDay" method="POST">
+			<tr>
+				<td><input name="letter" type="text" placeholder="Letter"></td>
+				<td><button>Add New</button></td>
+			</tr>
+		</form>
+	</table>
+
+	<h1>Administrators</h1>
+	<table>
+		<tr>
+			<th>Name</th>
+			<th>Email</th>
+		</tr>
+		{{#admins}}
+		<tr>
+			<td>{{name}}</td>
+			<td>{{email}}</td>
+			<td><button onclick="removeAdmin({{uid}}, '{{name}}');">Remove</button></td>
+		</tr>
+		{{/admins}}
+
+		<!-- post to /newAdmin to add a new administrator -->
+		<form action="/newAdmin" method="POST">
+			<tr>
+				<td><input name="name" type="text" placeholder="Name"></td>
+				<td><input name="email" type="text" placeholder="Email"></td>
+				<td><button>Add New</button></td>
+			</tr>
+		</form>
+	</table>
 </body>
 </html>
