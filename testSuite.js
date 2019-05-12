@@ -1,7 +1,7 @@
 
 var con = require('./database.js').connection;
 
-const NUM_TAS = 20;
+const NUM_TAS = 10;
 const NUM_ADMINS = 3;
 const NUM_LETTER_DAYS = 6;
 const TAS_PER_LETTER_DAY = Math.floor(NUM_TAS / NUM_LETTER_DAYS);

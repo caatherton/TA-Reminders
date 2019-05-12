@@ -155,66 +155,28 @@
 		<table>
 			<!-- letter day titles -->
 			<tr>
-				<th>Day A</th>
-				<th>Day B</th>
-				<th>Day C</th>
-				<th>Day D</th>
-				<th>Day E</th>
-				<th>Day F</th>
+			{{#days}}
+				<th>Day {{letter}}</th>
+			{{/days}}
 				<th>TA Master List</th>
 			</tr>
 
 			<!-- current assignments -->
 			<tr>
+			{{#days}}
 				<td>
-					<ul data-letter-uid="1" class="connectedSortable letterDay">
-						<li data-ta-uid="250" class="ta ui-state-default">Andy W</li>
-						<li data-ta-uid="252" class="ta ui-state-default">Jerry C</li>
+					<ul data-letter-uid="{{letterUID}}" class="connectedSortable letterDay">
+					{{#assignedTAs}}
+						<li data-ta-uid="{{taUID}}" class="ta ui-state-default">{{name}}</li>
+					{{/assignedTAs}}
 					</ul>
 				</td>
-				<td>
-					<ul data-letter-uid="2" class="connectedSortable letterDay">
-						<li data-ta-uid="212" class="ta ui-state-default">Anders K</li>
-						<li data-ta-uid="3" class="ta ui-state-default">Katie D</li>
-					</ul>
-				</td>
-				<td>
-					<ul data-letter-uid="3" class="connectedSortable letterDay">
-						<li data-ta-uid="412" class="ta ui-state-default">Sebastian C</li>
-					</ul>
-				</td>
-				<td>
-					<ul data-letter-uid="4" class="connectedSortable letterDay">
-						<li data-ta-uid="2104" class="ta ui-state-default">Thomas C</li>
-						<li data-ta-uid="221" class="ta ui-state-default">Zach M</li>
-					</ul>
-				</td>
-				<td>
-					<ul data-letter-uid="5" class="connectedSortable letterDay">
-						<li data-ta-uid="281" class="ta ui-state-default">Cole A</li>
-					</ul>
-				</td>
-				<td>
-					<ul data-letter-uid="6" class="connectedSortable letterDay">
-						<li data-ta-uid="260" class="ta ui-state-default">Liza K</li>
-						<li data-ta-uid="267" class="ta ui-state-default">Johnny L</li>
-					</ul>
-				</td>
+			{{/days}}
 				<td>
 					<ul data-letter-uid="-1" id="masterList" class="connectedSortable letterDay">
-						<li data-ta-uid="250" class="master-ta ta ui-state-default">Andy W</li>
-						<li data-ta-uid="252" class="master-ta ta ui-state-default">Jerry C</li>
-						<li data-ta-uid="212" class="master-ta ta ui-state-default">Anders K</li>
-						<li data-ta-uid="3" class="master-ta ta ui-state-default">Katie D</li>
-						<li data-ta-uid="412" class="master-ta ta ui-state-default">Sebastian C</li>
-						<li data-ta-uid="2104" class="master-ta ta ui-state-default">Thomas C</li>
-						<li data-ta-uid="221" class="master-ta ta ui-state-default">Zach M</li>
-						<li data-ta-uid="281" class="master-ta ta ui-state-default">Cole A</li>
-						<li data-ta-uid="260" class="master-ta ta ui-state-default">Liza K</li>
-						<li data-ta-uid="267" class="master-ta ta ui-state-default">Johnny L</li>
-						<li data-ta-uid="311" class="master-ta ta ui-state-default">Eddy C</li>
-						<li data-ta-uid="510" class="master-ta ta ui-state-default">Anika V</li>
-						<li data-ta-uid="512" class="master-ta ta ui-state-default">Hewson D</li>
+					{{#TAs}}
+						<li data-ta-uid="{{uid}}" class="master-ta ta ui-state-default">{{name}}</li>
+					{{/TAs}}
 					</ul>
 				</td>
 			</tr>
