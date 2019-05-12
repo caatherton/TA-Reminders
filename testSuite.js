@@ -19,6 +19,8 @@ var phones = ["(314) 331-9607","(849) 307-9575","(244) 250-6127","(339) 933-9902
 // list of emails
 var emails = ["kevinm@optonline.net","boftx@hotmail.com","mhassel@att.net","neonatus@me.com","carmena@outlook.com","jeffcovey@yahoo.ca","chrisk@aol.com","mnemonic@mac.com","nelson@att.net","amimojo@outlook.com","kostas@yahoo.ca","syrinx@aol.com","mcrawfor@hotmail.com","studyabr@icloud.com","ninenine@mac.com","lpalmer@att.net","thurston@verizon.net","drewf@optonline.net","geoffr@verizon.net","euice@sbcglobal.net","helger@verizon.net","lamky@yahoo.ca","dmouse@yahoo.ca","codex@icloud.com","hllam@yahoo.com","kingma@outlook.com","storerm@yahoo.com","samavati@me.com","bester@icloud.com","vganesh@yahoo.com","mmccool@msn.com","jonathan@mac.com","majordick@gmail.com","mgreen@yahoo.com","gospodin@aol.com","tezbo@me.com","wildixon@live.com","seasweb@optonline.net","mdielmann@hotmail.com","sriha@live.com","raides@msn.com","sopwith@comcast.net","giafly@me.com","skythe@me.com","dpitts@comcast.net","rfisher@yahoo.com","jaarnial@mac.com","dmbkiwi@live.com","joglo@att.net","joelw@outlook.com"];
 
+var types = ["CSP", "HDS", "HSE"];
+
 // retrieve a randomly-generated identity for a TA or admin
 function getRandomIdentity(isAdmin) {
 	if (isAdmin) {
@@ -30,7 +32,8 @@ function getRandomIdentity(isAdmin) {
 		return [
 			names[Math.floor(Math.random() * names.length)],
 			phones[Math.floor(Math.random() * phones.length)],
-			emails[Math.floor(Math.random() * emails.length)]
+			emails[Math.floor(Math.random() * emails.length)],
+			types[Math.floor(Math.random() * types.length)]
 		];
 	}
 }
@@ -49,7 +52,7 @@ con.query('INSERT INTO letterDays (name) VALUES ?;', [[['A'], ['B'], ['C'], ['D'
 
 		// insert TA profiles
 		process.stdout.write("Inserting TA profiles... ");
-		con.query('INSERT INTO TAs (name, phone, email) VALUES ?;', [tas], function(err) {
+		con.query('INSERT INTO TAs (name, phone, email, type) VALUES ?;', [tas], function(err) {
 			if (!err) {
 				console.log("Done.");
 

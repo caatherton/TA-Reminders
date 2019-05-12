@@ -10,6 +10,7 @@ CREATE TABLE TAs (
 	name VARCHAR(64),
 	phone VARCHAR(32),
 	email VARCHAR(64),
+	type VARCHAR(64),
 	PRIMARY KEY (uid)
 );
 

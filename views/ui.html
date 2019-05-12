@@ -136,10 +136,12 @@
 			return assignments;
 		}
 
-
-		$('#submit').click(function() {
+		// post the updated assignments to be applied
+		$('#updateAssignments').click(function() {
 			// get the current assignments
 			var assgn = getState();
+
+			console.log("POSTING ASSIGNMENTS");
 		})
 
 		// start master list as alphabetically sorted
@@ -220,6 +222,6 @@
 	</div>
 
 	<br><br>
-	<button id="submit">Get assignments</button>
+	<button id="updateAssignments">Apply Updates</button>
 </body>
 </html>
