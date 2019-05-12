@@ -2,10 +2,27 @@
 <html>
 <head>
 	<title>An Error Occurred!</title>
+	<link rel="stylesheet" type="text/css" href="/reset.css">
+	<link rel="stylesheet" type="text/css" href="/main.css">
+	<link rel="stylesheet" type="text/css" href="/navbar.css">
+	<link rel="stylesheet" type="text/css" href="/error.css">
 	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
 </head>
 <body>
-	<h1>An Error Occurred!</h1>
-	{{#message}}<p>{{message}}</p>{{/message}}
+	<div class="navbar">
+		<ul>
+			<li><a href="/"><i class="leftIcon fas fa-calendar-alt"></i> Hours Schedule</a></li>
+			<li><a href="/admin"><i class="leftIcon fas fa-user-shield"></i> Admin Portal</a></li>
+			<div style="float:right">
+				<li id="authMessage"><a href="#">{{auth.message}}</a></li>
+				<li><a href="/logout">Log Out <i class="rightIcon fas fa-sign-out-alt"></i></a></li>
+			</div>
+		</ul>
+	</div>
+
+	<div id="container">
+		<h1>An Error Occurred! <i class="rightIcon fas fa-exclamation-triangle"></i></h1>
+		{{#message}}<p>{{message}}</p>{{/message}}
+	</div>
 </body>
 </html>

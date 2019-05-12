@@ -20,6 +20,7 @@ h1 {
 	text-shadow: #000000 2px 0 10px;
 }
 
+
 #toggleMoreInfo {
 	padding: 5px;
 	margin-bottom: 5px;
@@ -62,6 +63,24 @@ h1 {
 	cursor: pointer;
 }
 
+.letterDay {
+	border: 1px solid #eee;
+	width: 133px;
+	min-height: 20px;
+	list-style-type: none;
+	margin: 0;
+	padding: 5px 0 0 0;
+	float: left;
+	margin-right: 10px;
+}
+
+.letterDay li {
+	margin: 0 5px 5px 5px;
+	padding: 5px;
+	font-size: 1.2em;
+	width: 120px;
+}
+
 /* align table elements at the top, instead of center */
 td {
 	vertical-align: top;
@@ -78,7 +97,7 @@ table {
 }
 
 li.ta {
-	font-size: 15px;
+	font-size: 14px;
 	border-radius: 3px;
 }
 
