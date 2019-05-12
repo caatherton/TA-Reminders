@@ -1,8 +1,8 @@
 
 body {
 	background-image: url('/greenway-bg.jpg');
-	height: 100%; 
-	background-position: center;
+	height: 100%;
+	background-position: top;
 	background-repeat: no-repeat;
 	background-size: cover;
 }
@@ -13,15 +13,15 @@ body {
 }
 
 #container {
+	text-align: left;
 	display: inline-block;
 	background-color: #d9d9d9;
 	margin-top: 50px;
-	padding: 20px;
+	padding: 30px;
 	border-radius: 5px;
 }
 
 h1 {
 	font-size: 35px;
-	margin-top: 20px;
 	color: #ff3333;
 }

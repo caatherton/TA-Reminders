@@ -89,7 +89,7 @@ module.exports = {
 					res.redirect('/admin');
 				} else {
 					res.render('error.html', Object.assign(auth.defaultRender(req), {
-						message: "Failed to add a new TA user: " + err
+						message: err
 					}));
 				}
 			});
@@ -112,7 +112,7 @@ module.exports = {
 					res.redirect('/admin');
 				} else {
 					res.render('error.html', Object.assign(auth.defaultRender(req), {
-						message: "Failed to add new letter day: " + err
+						message: err
 					}));
 				}
 			});
@@ -135,7 +135,7 @@ module.exports = {
 					res.redirect('/admin');
 				} else {
 					res.render('error.html', Object.assign(auth.defaultRender(req), {
-						message: "Failed to add new admin: " + err
+						message: err
 					}));
 				}
 			});
