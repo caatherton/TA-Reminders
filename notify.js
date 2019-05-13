@@ -244,3 +244,6 @@ function parsePreXTimes(durations, XTime) {
 
 	return result;
 }
+
+// every weekday at 1 AM, schedule all notifications for the day
+schedule.scheduleJob('0 0 1 * * 1-5', scheduleAllNotifications);

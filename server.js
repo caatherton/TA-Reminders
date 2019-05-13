@@ -24,9 +24,10 @@ app.use(session({
 	saveUninitialized: true
 }));
 
-var sys = require('./settings.js');
-var auth = require('./auth.js').init(app, passport);
-var routes = require('./routes.js').init(app);
+var sys = require('./settings.js');						// include system settings
+var auth = require('./auth.js').init(app, passport);	// initialize authentication system
+var routes = require('./routes.js').init(app);			// initialize application routes
+var notify = require('./notify.js');					// set up notification system
 
 app.get('*', (req, res) => {
 	res.redirect('/');
