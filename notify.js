@@ -23,6 +23,41 @@ var transporter = nodemailer.createTransport({
     }
 });
 
+// generate a fun and exciting greeting, given a name
+function greet(name) {
+	// extract first name, to be casual and *cool*
+	var spl = name.split(' ');
+	name = spl.length > 0 ? spl[0] : name;
+
+	// possible greetings
+	var greetings = [
+		"Hey %!",
+		"Heyo %!",
+		"What's up %!",
+		"What's poppin' %!"
+	];
+
+	// choose a random greeting and fill in the name
+	return greetings[Math.floor(Math.random() * greetings.length)].replace('%', name);
+}
+
+// generate a fun farewell message
+function farewell() {
+	// possible farewells
+	var farewells = [
+		"Love,",
+		"Sincerely,",
+		"Faithfully yours,",
+		"With love,"
+	];
+
+	// choose random farewell
+	return farewells[Math.floor(Math.random() * farewells.length)];
+}
+
+var ta = new TA("Thomas", "3243", "tcastleman@students.stab.org", moment('2019-05-12 22:30:00'));
+ta.notifyEmail();
+
 // TA Class
 function TA(_name, _phone, _email, _XBlockTime) {
 	// store name, phone & email
@@ -39,16 +74,8 @@ function TA(_name, _phone, _email, _XBlockTime) {
 		// debug
 		console.log("Sending SMS to " + self.name + " at " + self.phone);
 
-		var message;
-
-		// if we know when X Block is (we always should)
-		if (self.xBlockTime) {
-			// incorporate X Block time into message
-			message = "Hey " + self.name + "! You have CSTA hours today at " + self.xBlockTime.format('h:mm A') + " (" + self.xBlockTime.fromNow() + ")";
-		} else {
-			// fallback on non-specific reminder message
-			message = "Hey " + self.name + "! You have CSTA hours today!";
-		}
+		// generate custom message for this TA
+		var message = greet(self.name) + " You have CSTA hours today at " + self.xBlockTime.format('h:mm A') + " (" + self.xBlockTime.fromNow() + ")";
 
 		// use twilio to send to message to TA
 		twilio.messages
@@ -57,7 +84,6 @@ function TA(_name, _phone, _email, _XBlockTime) {
 				to: self.phone,
 				from: creds.TWILIO_NUMBER
 			})
-			.then(message => console.log(message.sid));
 	}
 
 	// notify this TA via email
@@ -69,13 +95,16 @@ function TA(_name, _phone, _email, _XBlockTime) {
 		var xTime = self.xBlockTime.format('h:mm A');
 		var xFromNow = self.xBlockTime.fromNow();
 
+		// generate custom message for this TA
+		var message = greet(self.name) + "<br><br>You have hours <strong>today at " + xTime + " (" + xFromNow + ")</strong>.<br><br>" + farewell() + "<br>CSTA Reminder Service";
+
 		// configure message settings / content
 		var options = {
 			to: self.email,
 			from: creds.MAIL_ADDRESS,
 			subject: "CSTA Hours Today! (" + xTime + ")",
-			text: "Hey " + self.name + "!\n\nYou have hours today at " + xTime + " (" + xFromNow + ").\n\nLove,\nCSTA Reminder Service",
-			html: "Hey " + self.name + "!<br><br>You have hours <strong>today at " + xTime + " (" + xFromNow + ")</strong>.<br><br>Love,<br>CSTA Reminder Service",
+			text: message.replace(/<br>/g, '\n').replace(/<.+?>/g, ''),
+			html: message
 		};
 
 		// use nodemailer transporter to send email to TA
@@ -120,54 +149,57 @@ function scheduleAllNotifications(cb) {
 					// get notification times relative to X Block, add to total notifications
 					emailNotifs.push.apply(emailNotifs, parsePreXTimes(sys.PRE_X_EMAIL_NOTS, XBlock));
 					smsNotifs.push.apply(smsNotifs, parsePreXTimes(sys.PRE_X_SMS_NOTS, XBlock));
-				}
 
-				// get current letter day UID by name
-				con.query('SELECT uid FROM letterDays WHERE name = ?;', [letter], function(err, rows) {
-					if (!err && rows !== undefined && rows.length > 0) {
-						var uid = rows[0].uid;
+					// get current letter day UID by name
+					con.query('SELECT uid FROM letterDays WHERE name = ?;', [letter], function(err, rows) {
+						if (!err && rows !== undefined && rows.length > 0) {
+							var uid = rows[0].uid;
 
-						// get all TAs who have hours today
-						con.query('SELECT t.name, t.phone, t.email, t.uid FROM letterDayAssgn a JOIN TAs t ON a.taUID = t.uid WHERE letterUID = ?;', [uid], function(err, rows) {
-							if (!err && rows !== undefined) {
-								var ta;
+							// get all TAs who have hours today
+							con.query('SELECT t.name, t.phone, t.email, t.uid FROM letterDayAssgn a JOIN TAs t ON a.taUID = t.uid WHERE letterUID = ?;', [uid], function(err, rows) {
+								if (!err && rows !== undefined) {
+									var ta;
 
-								// construct TA object for each TA on hours today, use to schedule calls to notification functions
-								for (var i = 0; i < rows.length; i++) {
-									ta = new TA(rows[i].name, rows[i].phone, rows[i].email, XBlock);
+									// construct TA object for each TA on hours today, use to schedule calls to notification functions
+									for (var i = 0; i < rows.length; i++) {
+										// construct new TA object, to have access to functions that will use this TA's contacts
+										ta = new TA(rows[i].name, rows[i].phone, rows[i].email, XBlock);
 
-									console.log("Scheduling notifications for " + ta.name + "...");
+										console.log("Scheduling notifications for " + ta.name + "...");
 
-									// schedule an email notification for this TA at each specificed email notification time
-									for (var k = 0; k < emailNotifs.length; k++) {
-										schedule.scheduleJob(emailNotifs[k].toDate(), ta.notifyEmail);
+										// schedule an email notification for this TA at each specificed email notification time
+										for (var k = 0; k < emailNotifs.length; k++) {
+											schedule.scheduleJob(emailNotifs[k].toDate(), ta.notifyEmail);
 
-										// debug: log message
-										console.log("Scheduling email for " + ta.email + " at " + emailNotifs[k].format("YYYY-MM-DD hh:mm A"));
+											// debug: log message
+											console.log("Scheduling email for " + ta.email + " at " + emailNotifs[k].format("YYYY-MM-DD hh:mm A"));
+										}
+
+										// schedule an SMS notification for this TA at each specified SMS notification time
+										for (var k = 0; k < smsNotifs.length; k++) {
+											schedule.scheduleJob(smsNotifs[k].toDate(), ta.notifySMS);
+
+											// debug: log message
+											console.log("Scheduling SMS for " + ta.phone + " at " + smsNotifs[k].format("YYYY-MM-DD hh:mm A"));
+										}
 									}
 
-									// schedule an SMS notification for this TA at each specified SMS notification time
-									for (var k = 0; k < smsNotifs.length; k++) {
-										schedule.scheduleJob(smsNotifs[k].toDate(), ta.notifySMS);
+									// callback successfully
+									cb();
 
-										// debug: log message
-										console.log("Scheduling SMS for " + ta.phone + " at " + smsNotifs[k].format("YYYY-MM-DD hh:mm A"));
-									}
+								} else {
+									// callback on error
+									cb(err || "Unable to determine which TA's have hours today");
 								}
-
-								// callback successfully
-								cb();
-
-							} else {
-								// callback on error
-								cb(err || "Unable to determine which TA's have hours today");
-							}
-						});
-					} else {
-						// callback on error
-						cb(err || "Unable to determine today's letter day");
-					}
-				});
+							});
+						} else {
+							// callback on error
+							cb(err || "Unable to determine today's letter day");
+						}
+					});
+				} else {
+					cb();
+				}
 			} else {
 				// callback on error
 				cb(res.err);
