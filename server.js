@@ -34,5 +34,5 @@ app.get('*', (req, res) => {
 
 // start server
 var server = app.listen(sys.PORT, function() {
-	console.log('TA Reminder Server listening on port %d', server.address().port);
+	console.log('CSTA Reminder Server listening on port %d', server.address().port);
 });

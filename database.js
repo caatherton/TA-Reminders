@@ -10,6 +10,7 @@ var con = mysql.createConnection({
 });
 
 module.exports = {
+	// export connection
 	connection: con,
 
 	// get all existing letter days
@@ -215,5 +216,31 @@ module.exports = {
 		} else {
 			cb("Unable to delete admin as no UID has been provided.");
 		}
+	},
+
+	// get the UID of a letter day by its letter value
+	getLetterUIDByLetter: function(letter, cb) {
+		// select UID from letterDays table
+		con.query('SELECT uid FROM letterDays WHERE name = ?;', [letter], function(err, rows) {
+			if (!err && rows !== undefined && rows.length > 0) {
+				// callback on UID
+				cb(err, rows[0].uid);
+			} else {
+				// callback on error
+				cb(err);
+			}
+		});
+	},
+
+	// get all TA profiles who are assigned to a given letter day
+	getTAsAssignedToLetter: function(letterUID, cb) {
+		// join TAs to letter day assignments table
+		con.query('SELECT t.name, t.phone, t.email, t.uid FROM letterDayAssgn a JOIN TAs t ON a.taUID = t.uid WHERE letterUID = ?;', [letterUID], function(err, rows) {
+			if (!err && rows !== undefined) {
+				cb(err, rows);
+			} else {
+				cb(err);
+			}
+		});
 	}
 }
