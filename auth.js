@@ -49,7 +49,7 @@ module.exports = {
 		passport.use(new GoogleStrategy({
 				clientID:		creds.GOOGLE_CLIENT_ID,
 				clientSecret:	creds.GOOGLE_CLIENT_SECRET,
-				callbackURL:	creds.domain + "/auth/google/callback",
+				callbackURL:	creds.DOMAIN + "/auth/google/callback",
 				passReqToCallback: true,
 
 				// tells passport to use userinfo endpoint instead of Google+

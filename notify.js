@@ -7,22 +7,38 @@ var moment = require('moment');
 var request = require('request');
 var schedule = require('node-schedule');
 var twilio = require('twilio')(creds.TWILIO_ACCOUNT_SID, creds.TWILIO_AUTH_TOKEN);
-var nodemailer = require('nodemailer');
+var mailgun = require('mailgun-js')({ apiKey: creds.MAILGUN_API_KEY, domain: creds.DOMAIN });
 
-// create email-sender with nodemailer using Google OAuth2
-var transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 465,
-    secure: true,
-    auth: {
-        type: 'OAuth2',
-        user: creds.MAIL_ADDRESS,
-        clientId: creds.MAIL_CLIENT_ID,
-        clientSecret: creds.MAIL_CLIENT_SECRET,
-        refreshToken: creds.MAIL_REFRESH_TOKEN,
-        accessToken: creds.MAIL_ACCESS_TOKEN
-    }
+var data = {
+	from: 'Excited User <me@samples.mailgun.>',
+	to: '',
+	subject: 'Hello',
+	text: 'This is mail sent from mailgun!'
+};
+
+// send email message
+mailgun.messages().send(data, function(err, body) {
+	console.log(err);
+	console.log(body);
 });
+
+
+// var nodemailer = require('nodemailer');
+
+// // create email-sender with nodemailer using Google OAuth2
+// var transporter = nodemailer.createTransport({
+//     host: 'smtp.gmail.com',
+//     port: 465,
+//     secure: true,
+//     auth: {
+//         type: 'OAuth2',
+//         user: creds.MAIL_ADDRESS,
+//         clientId: creds.MAIL_CLIENT_ID,
+//         clientSecret: creds.MAIL_CLIENT_SECRET,
+//         refreshToken: creds.MAIL_REFRESH_TOKEN,
+//         accessToken: creds.MAIL_ACCESS_TOKEN
+//     }
+// });
 
 // generate a fun and exciting greeting, given a name
 function greet(name) {
