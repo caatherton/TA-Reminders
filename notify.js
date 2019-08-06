@@ -93,14 +93,14 @@ function TA(_name, _phone, _email, _XBlockTime) {
 		// send email
 		mailgun.messages().send(options, (err, body) => {
 			if (err) {
-				if (sys.LOGGING) console.log("Failed to send email to \'" + self.email + "\'");
+				if (sys.LOGGING) console.log("Failed to send email to \'" + self.email + "\': " + err);
 			}
 		});
 	}
 }
 
 // schedule all notifications for today's TAs
-function scheduleAllNotifications(cb) {
+function scheduleAllNotifications() {
 	// make request to letter day API to get letter and X Block time
 	request(sys.LETTER_DAY_ENDPOINT, function(err, response, body) {
 		// if no error making request
@@ -169,30 +169,24 @@ function scheduleAllNotifications(cb) {
 											if (sys.LOGGING) console.log("Scheduling SMS for " + ta.phone + " at " + smsNotifs[k].format("YYYY-MM-DD hh:mm A"));
 										}
 									}
-
-									// callback successfully
-									cb();
 								} else {
-									// callback on error
-									cb(err || "Unable to determine which TA's have hours today");
+									// log error
+									console.log(err || "Unable to determine which TA's have hours today");
 								}
 							});
 						} else {
-							// callback on error
-							cb(err || "Unable to determine today's letter day");
+							// log error
+							console.log(err || "Unable to determine today's letter day");
 						}
 					});
-				} else {
-					// callback without error, since many days will not have X Block info (non-school days)
-					cb();
 				}
 			} else {
-				// callback on error
-				cb(res.err);
+				// log error
+				console.log(res.err);
 			}
 		} else {
-			// callback on error
-			cb(err);
+			// log error
+			console.log(err);
 		}
 	});
 }
