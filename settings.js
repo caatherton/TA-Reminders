@@ -8,6 +8,10 @@ module.exports = {
 	// enable console logging (debug)
 	LOGGING: true,
 
+	// cron string specifying when to schedule notifications
+	// This is every weekday at 1 AM
+	SCHEDULER_CRON_STRING: '0 0 1 * * 1-5',
+
 	// endpoint for retrieving today's letter / schedule info
 	LETTER_DAY_ENDPOINT: 'http://day.cs.stab.org/infoToday',
 
