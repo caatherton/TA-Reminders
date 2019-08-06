@@ -7,38 +7,7 @@ var moment = require('moment');
 var request = require('request');
 var schedule = require('node-schedule');
 var twilio = require('twilio')(creds.TWILIO_ACCOUNT_SID, creds.TWILIO_AUTH_TOKEN);
-var mailgun = require('mailgun-js')({ apiKey: creds.MAILGUN_API_KEY, domain: creds.DOMAIN });
-
-var data = {
-	from: 'Excited User <me@samples.mailgun.>',
-	to: '',
-	subject: 'Hello',
-	text: 'This is mail sent from mailgun!'
-};
-
-// send email message
-mailgun.messages().send(data, function(err, body) {
-	console.log(err);
-	console.log(body);
-});
-
-
-// var nodemailer = require('nodemailer');
-
-// // create email-sender with nodemailer using Google OAuth2
-// var transporter = nodemailer.createTransport({
-//     host: 'smtp.gmail.com',
-//     port: 465,
-//     secure: true,
-//     auth: {
-//         type: 'OAuth2',
-//         user: creds.MAIL_ADDRESS,
-//         clientId: creds.MAIL_CLIENT_ID,
-//         clientSecret: creds.MAIL_CLIENT_SECRET,
-//         refreshToken: creds.MAIL_REFRESH_TOKEN,
-//         accessToken: creds.MAIL_ACCESS_TOKEN
-//     }
-// });
+var mailgun = require('mailgun-js')({ apiKey: creds.MAILGUN_API_KEY, domain: creds.MAILGUN_DOMAIN });
 
 // generate a fun and exciting greeting, given a name
 function greet(name) {
@@ -114,15 +83,19 @@ function TA(_name, _phone, _email, _XBlockTime) {
 
 		// configure message settings / content
 		var options = {
+			from: creds.MAILGUN_FROM_ADDRESS,
 			to: self.email,
-			from: creds.MAIL_ADDRESS,
 			subject: "CSTA Hours Today! (" + xTime + ")",
 			text: message.replace(/<br>/g, '\n').replace(/<.+?>/g, ''),
 			html: message
 		};
 
-		// use nodemailer transporter to send email to TA
-		transporter.sendMail(options);
+		// send email
+		mailgun.messages().send(options, (err, body) => {
+			if (err) {
+				if (sys.LOGGING) console.log("Failed to send email to \'" + self.email + "\'");
+			}
+		});
 	}
 }
 
