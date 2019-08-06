@@ -151,7 +151,7 @@ function scheduleAllNotifications() {
 										ta = new TA(assignedTAs[i].name, assignedTAs[i].phone, assignedTAs[i].email, XBlock);
 
 										// log who we're scheduling for
-										if (sys.LOGGING) console.log("Scheduling notifications for " + ta.name + " (" + ta.uid + ")...");
+										if (sys.LOGGING) console.log("Scheduling notifications for " + ta.name + " (" + assignedTAs[i].uid + ")...");
 
 										// schedule an email notification for this TA at each specificed email notification time
 										for (var k = 0; k < emailNotifs.length; k++) {
