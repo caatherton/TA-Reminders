@@ -2,7 +2,7 @@ var creds = require('./credentials.js');
 var mysql = require('mysql');
 
 // establish MySQL connection
-var con = mysql.createConnection({
+var con = mysql.createPool({
 	host: 'localhost',
 	user: creds.MySQL_username,
 	password: creds.MySQL_password,
