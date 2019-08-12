@@ -57,8 +57,11 @@ function TA(_name, _phone, _email, _XBlockTime) {
 		// log SMS notification as it happens
 		if (sys.LOGGING) console.log("Sending SMS to " + self.name + " at " + self.phone + " (" + moment().format('YYYY-MM-DD HH:mm:ss') + ")");
 
+		// get X time and distance from current time
+		var x = parseXInfo(self.xBlockTime);
+
 		// generate custom message for this TA
-		var message = greet(self.name) + " You have CSTA hours today at " + self.xBlockTime.format('h:mm A') + " (" + self.xBlockTime.fromNow() + ")";
+		var message = greet(self.name) + " You have CSTA hours today at " + x.time + " (" + x.fromNow + ")";
 
 		// use twilio to send to message to TA
 		twilio.messages
@@ -66,7 +69,7 @@ function TA(_name, _phone, _email, _XBlockTime) {
 				body: message,
 				to: self.phone,
 				from: creds.TWILIO_NUMBER
-			})
+			});
 	}
 
 	// notify this TA via email
@@ -74,18 +77,17 @@ function TA(_name, _phone, _email, _XBlockTime) {
 		// log email notification as it happens
 		if (sys.LOGGING) console.log("Emailing " + self.name + " at " + self.email + " (" + moment().format('YYYY-MM-DD HH:mm:ss') + ")");
 
-		// format the X Block start time into a string
-		var xTime = self.xBlockTime.format('h:mm A');
-		var xFromNow = self.xBlockTime.fromNow();
+		// get X time and distance from current time
+		var x = parseXInfo(self.xBlockTime);
 
 		// generate custom message for this TA
-		var message = greet(self.name) + "<br><br>You have hours <strong>today at " + xTime + " (" + xFromNow + ")</strong>.<br><br>" + farewell() + "<br>CSTA Reminder Service";
+		var message = greet(self.name) + "<br><br>You have hours <strong>today at " + x.time + " (" + x.fromNow + ")</strong>.<br><br>" + farewell() + "<br>CSTA Reminder Service";
 
 		// configure message settings / content
 		var options = {
 			from: creds.MAILGUN_FROM_ADDRESS,
 			to: self.email,
-			subject: "CSTA Hours Today! (" + xTime + ")",
+			subject: "CSTA Hours Today! (" + x.time + ")",
 			text: message.replace(/<br>/g, '\n').replace(/<.+?>/g, ''),
 			html: message
 		};
@@ -97,6 +99,22 @@ function TA(_name, _phone, _email, _XBlockTime) {
 			}
 		});
 	}
+}
+
+// given X Block moment object, parse relevant info
+function parseXInfo(X) {
+	// format the X Block start time into a string
+	var info = {
+		time: X.format('h:mm A'),
+		fromNow: X.fromNow()
+	}
+
+	// handle case where notification is scheduled at time of X Block
+	if (moment().isSame(X, 'minute')) {
+		info.fromNow = "right now";
+	}
+
+	return info;
 }
 
 // schedule all notifications for today's TAs
