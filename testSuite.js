@@ -1,5 +1,5 @@
 
-var con = require('./database.js').connection;
+const con = require('./database.js').connection;
 
 const NUM_TAS = 10;
 const NUM_ADMINS = 3;

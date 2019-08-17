@@ -1,8 +1,8 @@
-var creds = require('./credentials.js');
-var mysql = require('mysql');
+const creds = require('./credentials.js');
+const mysql = require('mysql');
 
 // establish MySQL connection
-var con = mysql.createPool({
+const con = mysql.createPool({
 	host: 'localhost',
 	user: creds.MySQL_username,
 	password: creds.MySQL_password,

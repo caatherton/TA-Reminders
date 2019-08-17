@@ -3,10 +3,10 @@
 	auth.js: Authentication routes / configurations and middleware for restricting pages / requests to various levels of authentication
 */
 
-var GoogleStrategy = require('passport-google-oauth20').Strategy;
-var querystring = require('querystring');
-var con = require('./database.js').connection;
-var creds = require('./credentials.js');
+const GoogleStrategy = require('passport-google-oauth20').Strategy;
+const querystring = require('querystring');
+const con = require('./database.js').connection;
+const creds = require('./credentials.js');
 
 module.exports = {
 

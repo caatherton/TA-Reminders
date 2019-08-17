@@ -1,5 +1,5 @@
 
-var moment = require('moment');
+const moment = require('moment');
 
 module.exports = {
 	// server port

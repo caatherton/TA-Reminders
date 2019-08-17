@@ -1,13 +1,13 @@
 
-var creds = require('./credentials.js');
-var db = require('./database.js');
-var con = db.connection;
-var sys = require('./settings.js');
-var moment = require('moment');
-var request = require('request');
-var schedule = require('node-schedule');
-var twilio = require('twilio')(creds.TWILIO_ACCOUNT_SID, creds.TWILIO_AUTH_TOKEN);
-var mailgun = require('mailgun-js')({ apiKey: creds.MAILGUN_API_KEY, domain: creds.MAILGUN_DOMAIN });
+const creds = require('./credentials.js');
+const db = require('./database.js');
+const con = db.connection;
+const sys = require('./settings.js');
+const moment = require('moment');
+const request = require('request');
+const schedule = require('node-schedule');
+const twilio = require('twilio')(creds.TWILIO_ACCOUNT_SID, creds.TWILIO_AUTH_TOKEN);
+const mailgun = require('mailgun-js')({ apiKey: creds.MAILGUN_API_KEY, domain: creds.MAILGUN_DOMAIN });
 
 // generate a fun and exciting greeting, given a name
 function greet(name) {
@@ -54,50 +54,56 @@ function TA(_name, _phone, _email, _XBlockTime) {
 
 	// notify this TA via SMS
 	this.notifySMS = function() {
-		// log SMS notification as it happens
-		if (sys.LOGGING) console.log("Sending SMS to " + self.name + " at " + self.phone + " (" + moment().format('YYYY-MM-DD HH:mm:ss') + ")");
+		// only send notification if phone field defined
+		if (self.phone) {
+			// log SMS notification as it happens
+			if (sys.LOGGING) console.log("Sending SMS to " + self.name + " at " + self.phone + " (" + moment().format('YYYY-MM-DD HH:mm:ss') + ")");
 
-		// get X time and distance from current time
-		var x = parseXInfo(self.xBlockTime);
+			// get X time and distance from current time
+			var x = parseXInfo(self.xBlockTime);
 
-		// generate custom message for this TA
-		var message = greet(self.name) + " You have CSTA hours today at " + x.time + " (" + x.fromNow + ")";
+			// generate custom message for this TA
+			var message = greet(self.name) + " You have CSTA hours today at " + x.time + " (" + x.fromNow + ")";
 
-		// use twilio to send to message to TA
-		twilio.messages
-			.create({
-				body: message,
-				to: self.phone,
-				from: creds.TWILIO_NUMBER
-			});
+			// use twilio to send to message to TA
+			twilio.messages
+				.create({
+					body: message,
+					to: self.phone,
+					from: creds.TWILIO_NUMBER
+				});
+		}
 	}
 
 	// notify this TA via email
 	this.notifyEmail = function() {
-		// log email notification as it happens
-		if (sys.LOGGING) console.log("Emailing " + self.name + " at " + self.email + " (" + moment().format('YYYY-MM-DD HH:mm:ss') + ")");
+		// only send notification if email field defined
+		if (self.email) {
+			// log email notification as it happens
+			if (sys.LOGGING) console.log("Emailing " + self.name + " at " + self.email + " (" + moment().format('YYYY-MM-DD HH:mm:ss') + ")");
 
-		// get X time and distance from current time
-		var x = parseXInfo(self.xBlockTime);
+			// get X time and distance from current time
+			var x = parseXInfo(self.xBlockTime);
 
-		// generate custom message for this TA
-		var message = greet(self.name) + "<br><br>You have hours <strong>today at " + x.time + " (" + x.fromNow + ")</strong>.<br><br>" + farewell() + "<br>CSTA Reminder Service";
+			// generate custom message for this TA
+			var message = greet(self.name) + "<br><br>You have hours <strong>today at " + x.time + " (" + x.fromNow + ")</strong>.<br><br>" + farewell() + "<br>CSTA Reminder Service";
 
-		// configure message settings / content
-		var options = {
-			from: creds.MAILGUN_FROM_ADDRESS,
-			to: self.email,
-			subject: "CSTA Hours Today! (" + x.time + ")",
-			text: message.replace(/<br>/g, '\n').replace(/<.+?>/g, ''),
-			html: message
-		};
+			// configure message settings / content
+			var options = {
+				from: creds.MAILGUN_FROM_ADDRESS,
+				to: self.email,
+				subject: "CSTA Hours Today! (" + x.time + ")",
+				text: message.replace(/<br>/g, '\n').replace(/<.+?>/g, ''),
+				html: message
+			};
 
-		// send email
-		mailgun.messages().send(options, (err, body) => {
-			if (err) {
-				if (sys.LOGGING) console.log("Failed to send email to \'" + self.email + "\': " + err);
-			}
-		});
+			// send email
+			mailgun.messages().send(options, (err, body) => {
+				if (err) {
+					if (sys.LOGGING) console.log("Failed to send email to \'" + self.email + "\': " + err);
+				}
+			});
+		}
 	}
 }
 

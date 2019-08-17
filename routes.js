@@ -1,7 +1,7 @@
 
-var db = require('./database.js');
-var con = db.connection;
-var auth = require('./auth.js');
+const db = require('./database.js');
+const con = db.connection;
+const auth = require('./auth.js');
 
 module.exports = {
 	init: function(app) {

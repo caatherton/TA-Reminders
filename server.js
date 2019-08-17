@@ -1,12 +1,12 @@
 
-var express 			= require('express');
-var app 				= express();
-var mustacheExpress 	= require('mustache-express');
-var bodyParser 			= require('body-parser');
-var cookieParser 		= require('cookie-parser');
-var session 			= require('cookie-session');
-var passport 			= require('passport');
-var creds				= require('./credentials.js');
+const express 			= require('express');
+const app 				= express();
+const mustacheExpress 	= require('mustache-express');
+const bodyParser 			= require('body-parser');
+const cookieParser 		= require('cookie-parser');
+const session 			= require('cookie-session');
+const passport 			= require('passport');
+const creds				= require('./credentials.js');
 
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -24,16 +24,16 @@ app.use(session({
 	saveUninitialized: true
 }));
 
-var sys = require('./settings.js');						// include system settings
-var auth = require('./auth.js').init(app, passport);	// initialize authentication system
-var routes = require('./routes.js').init(app);			// initialize application routes
-var notify = require('./notify.js');					// set up notification system
+const sys = require('./settings.js');						// include system settings
+const auth = require('./auth.js').init(app, passport);	// initialize authentication system
+const routes = require('./routes.js').init(app);			// initialize application routes
+const notify = require('./notify.js');					// set up notification system
 
 app.get('*', (req, res) => {
 	res.redirect('/');
 });
 
 // start server
-var server = app.listen(sys.PORT, function() {
+const server = app.listen(sys.PORT, function() {
 	console.log('CSTA Reminder Server listening on port %d', server.address().port);
 });
