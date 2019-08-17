@@ -185,6 +185,14 @@ module.exports = {
 			});
 		});
 
+		// get object serialization of current hours assignments
+		app.get('/api/assignments', (req, res) => {
+			db.getAssignments(function(err, assgn) {
+				// send data & potentially, error
+				res.send({ err: err, assignments: assgn });
+			});
+		});
+
 		return module.exports;
 	}
 }

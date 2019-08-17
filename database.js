@@ -244,9 +244,3 @@ module.exports = {
 		});
 	}
 }
-
-
-module.exports.getAssignments(function(err, assgn) {
-	if (err) throw err;
-	console.log(JSON.stringify(assgn));
-});
