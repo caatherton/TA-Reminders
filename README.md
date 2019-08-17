@@ -33,6 +33,35 @@ Email notifications are sent through [Mailgun](https://www.mailgun.com/), and re
 
 Static email notifications are specified in the `STATIC_EMAIL_NOTS` field of `settings.js`, and relative email notifications likewise in the `PRE_X_EMAIL_NOTS` field.
 
+### API
+The TA Hours API can be used to retrieve a plain object encoding the hours assignments. A GET request to `/api/assignments` will respond with an object of the following form:
+
+```javascript
+{  
+   "err": null,
+   "assignments":[  
+      {  
+         "letterUID":1,
+         "letter":"A",
+         "assignedTAs":[  
+            {  
+               "taUID":3,
+               "letterUID":1,
+               "name":"Cole Atherton",
+               "type":"HDS"
+            },
+	    
+	    ...
+         ]
+      },
+      
+      ...
+   ]
+}
+```
+
+The `assignments` field is an array of objects for each letter day, each of which has an `assignedTAs` field with the TA's on hours for that day.
+
 ### Testing
 
 A script to generate test data is available by running `node testSuite.js`. This populates the database with fake TA profiles, fake admin profiles, and standard A-F letter days. It also randomly generates hours assignments for these fake profiles.
