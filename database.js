@@ -54,8 +54,8 @@ module.exports = {
 					};
 				}
 
-				// get hours assignments, with full TA info
-				con.query('SELECT * FROM letterDayAssgn a JOIN TAs t ON a.taUID = t.uid;', function(err, rows) {
+				// get hours assignments, with TA uid, name, and type
+				con.query('SELECT a.taUID, a.letterUID, t.name, t.type FROM letterDayAssgn a JOIN TAs t ON a.taUID = t.uid;', function(err, rows) {
 					if (!err && rows !== undefined) {
 						// add each TA to their assigned letter day(s)
 						for (var i = 0; i < rows.length; i++) {
@@ -244,3 +244,9 @@ module.exports = {
 		});
 	}
 }
+
+
+module.exports.getAssignments(function(err, assgn) {
+	if (err) throw err;
+	console.log(JSON.stringify(assgn));
+});
