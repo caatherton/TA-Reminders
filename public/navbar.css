@@ -3,7 +3,7 @@
     font-family: 'Averia Sans Libre';
     font-size: 15px;
 	width: 100%;
-    background-color: #595959;
+    background-color: rgba(0, 0, 0, 0.25);
     color: white;
     margin-bottom: 10px;
 
@@ -34,7 +34,7 @@
 }
 
 .navbar li a:hover {
-    background-color: #404040;
+    background-color: rgba(0, 0, 0, 0.15);
 }
 
 /* push text titles for each link away from their icons */

@@ -7,7 +7,7 @@ module.exports = {
 	init: function(app) {
 
 		// render calendar interface for editing hours assignments for either admin or TA
-		app.get('/', auth.isAuthGET, (req, res) => {
+		app.get('/', (req, res) => {
 			var render = auth.defaultRender(req);
 
 			// get hours assignments
@@ -22,16 +22,22 @@ module.exports = {
 							// store profiles in render obj
 							render.TAs = TAs;
 
-							// render admin interface for admins
-							if (req.user.local.isAdmin) {
-								// render calendar interface
-								res.render('adminScheduler.html', render);
-							} else {
-								// store this TA's system info in render object
-								render.user = req.user.local;
+							// if authenticated user, render a scheduler page
+							if (req.isAuthenticated() && req.user.local) {
+								// render admin interface for admins
+								if (req.user.local.isAdmin) {
+									// render calendar interface
+									res.render('adminScheduler.html', render);
+								} else {
+									// store this TA's system info in render object
+									render.user = req.user.local;
 
-								// render hours scheduler for TAs
-								res.render('TAScheduler.html', render);
+									// render hours scheduler for TAs
+									res.render('TAScheduler.html', render);
+								}
+							} else {
+								// render hours schedule viewer for unauth'd users
+								res.render('scheduleView.html', render);
 							}
 						} else {
 							// render error
