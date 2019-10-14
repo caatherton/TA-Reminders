@@ -107,8 +107,8 @@
 			<td>{{email}}</td>
 			<td>{{phone}}</td>
 			<td>{{type}}</td>
-			<td><a href="/editTA/{{uid}}"><i class="far fa-edit"></i></a></td>
-			<td><button onclick="removeTA({{uid}}, '{{name}}');" class="remove"><i class="fas fa-trash"></i></button></td>
+			<td><a href="/editTA/{{uid}}" class="edit" title="Edit TA"><i class="far fa-edit"></i></a></td>
+			<td><button onclick="removeTA({{uid}}, '{{name}}');" class="remove" title="Remove TA"><i class="fas fa-trash"></i></button></td>
 		</tr>
 		{{/TAs}}
 		
@@ -119,7 +119,7 @@
 				<td><input name="email" type="text" placeholder="Email"></td>
 				<td><input name="phone" type="text" placeholder="Phone"></td>
 				<td><input name="type" type="text" placeholder="Type"></td>
-				<td><button class="new"><i class="fas fa-plus"></i></button></td>
+				<td><button class="new" title="New TA"><i class="fas fa-plus"></i></button></td>
 			</tr>
 		</form>
 	</table>
@@ -133,7 +133,7 @@
 			{{#letterDays}}
 			<tr>
 				<td>{{name}}</td>
-				<td><button onclick="removeLetter({{uid}}, '{{name}}');" class="remove"><i class="fas fa-trash"></i></button></td>
+				<td><button onclick="removeLetter({{uid}}, '{{name}}');" class="remove" title="Remove Letter Day"><i class="fas fa-trash"></i></button></td>
 			</tr>
 			{{/letterDays}}
 
@@ -141,7 +141,7 @@
 			<form action="/newLetterDay" method="POST">
 				<tr>
 					<td><input name="letter" class="letterInput" maxlength="1" type="text" placeholder="Letter"></td>
-					<td><button class="new"><i class="fas fa-plus"></i></button></td>
+					<td><button class="new" title="New Letter Day"><i class="fas fa-plus"></i></button></td>
 				</tr>
 			</form>
 		</table>
@@ -157,7 +157,7 @@
 			<tr>
 				<td>{{name}}</td>
 				<td>{{email}}</td>
-				<td><button onclick="removeAdmin({{uid}}, '{{name}}');" class="remove"><i class="fas fa-trash"></i></button></td>
+				<td><button onclick="removeAdmin({{uid}}, '{{name}}');" class="remove" title="Remove Admin"><i class="fas fa-trash"></i></button></td>
 			</tr>
 			{{/admins}}
 
@@ -166,7 +166,7 @@
 				<tr>
 					<td><input name="name" type="text" placeholder="Name"></td>
 					<td><input name="email" type="text" placeholder="Email"></td>
-					<td><button class="new"><i class="fas fa-plus"></i></button></td>
+					<td><button class="new" title="New Admin"><i class="fas fa-plus"></i></button></td>
 				</tr>
 			</form>
 		</table>

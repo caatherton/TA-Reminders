@@ -1,0 +1,50 @@
+
+
+body {
+  background-image: url('/greenway-bg.jpg');
+  height: 1050px !important;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+table {
+  margin-top: 15px;
+}
+
+.submit {
+  color: white;
+  padding: 3px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border: none;
+  border-radius: 3px;
+  background-color: #66ff33;
+}
+
+.submit:hover {
+  cursor: pointer;
+}
+
+.name, .email {
+  width: 275px;
+}
+
+.phone {
+  width: 150px;
+}
+
+.type {
+  width: 170px;
+}
+
+#star {
+  color: #ff3333
+}
+
+#btw {
+  color: white;
+  font-size: 18px;
+  margin-top: 15px;
+  text-shadow: #ff3333 2px 0 10px;
+}

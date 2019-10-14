@@ -1,5 +1,4 @@
 
-
 body {
 	background-image: url('/greenway-bg.jpg');
 	height: 100%; 
@@ -30,6 +29,21 @@ table {
 /* background change for hover */
 tr:hover {
 	background-color: #e6e6e6;
+}
+
+.edit {
+	text-align: center;
+  color: white;
+  padding: 3px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border: none;
+  border-radius: 3px;
+  background-color: #4d94ff;
+}
+
+.edit:hover {
+  cursor: pointer;
 }
 
 .remove {

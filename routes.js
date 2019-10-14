@@ -111,11 +111,15 @@ module.exports = {
 
 		// render edit page for an indicated TA, by UID
 		app.get('/editTA/:id', auth.isAdminGET, (req, res) => {
+			var render = auth.defaultRender(req);
+
+			// get info on TA requesting to edit
 			db.getTA(req.params.id, (err, TA) => {
 				if (!err) {
-					res.render('editTA.html', { ta: TA });
+					render.ta = TA;
+					res.render('editTA.html', render);
 				} else {
-					res.render('error.html', Object.assign(auth.defaultRender(req), {
+					res.render('error.html', Object.assign(render, {
 						message: err
 					}));
 				}
