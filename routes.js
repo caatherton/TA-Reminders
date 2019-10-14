@@ -109,6 +109,32 @@ module.exports = {
 			});
 		});
 
+		// render edit page for an indicated TA, by UID
+		app.get('/editTA/:id', auth.isAdminGET, (req, res) => {
+			db.getTA(req.params.id, (err, TA) => {
+				if (!err) {
+					res.render('editTA.html', { ta: TA });
+				} else {
+					res.render('error.html', Object.assign(auth.defaultRender(req), {
+						message: err
+					}));
+				}
+			});
+		});
+
+		// handle edits to TAs
+		app.post('/editTA/:id', auth.isAdminPOST, (req, res) => {
+			db.editTA(req.body.uid, req.body.name, req.body.phone, req.body.email, req.body.type, (err) => {
+				if (!err) {
+					res.redirect('/admin');
+				} else {
+					res.render('error.html', Object.assign(auth.defaultRender(req), {
+						message: err
+					}));
+				}
+			});
+		});
+
 		// create a new letter day option
 		app.post('/newLetterDay', auth.isAdminPOST, (req, res) => {
 			// add letter day

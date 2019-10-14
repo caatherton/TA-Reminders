@@ -153,6 +153,22 @@ module.exports = {
 		}
 	},
 
+	// retrieve a singular TA by UID
+	getTA: function(uid, cb) {
+		if (uid) {
+			// select TA info from table
+			con.query('SELECT * FROM TAs WHERE uid = ?;', [uid], function(err, rows) {
+				if (!err && rows !== undefined && rows.length > 0) {
+					cb(err, rows[0]);
+				} else {
+					cb(err || ("Failed to retrieve the TA associated with this identifier: " + uid));
+				}
+			});
+		} else {
+			cb("Invalid identifier provided, unable to retrieve TA information.");
+		}
+	},
+
 	// remove an existing TA by UID
 	deleteTA: function(uid, cb) {
 		// ensure UID is defined
@@ -163,6 +179,21 @@ module.exports = {
 			});
 		} else {
 			cb("Unable to delete TA as no UID has been provided.");
+		}
+	},
+
+	// edit fields of an existing TA
+	editTA: function(uid, name, phone, email, type, cb) {
+		if (uid && email) {
+
+			// reset empty non-required fields to null
+			if (name == '') name = null;
+			if (phone == '') phone = null;
+			if (type == '') type = null;
+
+			con.query('UPDATE TAs SET name = ?, phone = ?, email = ?, type = ? WHERE uid = ?;', [name, phone, email, type, uid], cb);
+		} else {
+			cb("Unable to edit TA as either identifier or email was not provided");
 		}
 	},
 

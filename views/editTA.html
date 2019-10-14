@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Edit TA | CSTA Reminder Service</title>
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
+</head>
+<body>
+  <form action="/editTA/{{ta.uid}}" method="POST">
+    <table>
+      <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Phone</th>
+        <th>Type</th>
+      </tr>
+      <tr>
+        <input name="uid" type="text" value="{{ta.uid}}" hidden>
+        <td><input name="name" type="text" placeholder="Name" value="{{ta.name}}" autocomplete="off"></td>
+        <td><input name="email" type="text" placeholder="Email" value="{{ta.email}}" autocomplete="off"></td>
+        <td><input name="phone" type="text" placeholder="Phone" value="{{ta.phone}}" autocomplete="off"></td>
+        <td><input name="type" type="text" placeholder="Type" value="{{ta.type}}" autocomplete="off"></td>
+        <td><button type="submit"><i class="fas fa-save"></i></button></td>
+      </tr>
+    </table>
+  </form>
+</body>
+</html>
