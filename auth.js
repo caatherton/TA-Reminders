@@ -69,7 +69,8 @@ module.exports = {
 		app.get('/auth/google', module.exports.checkReturnTo, passport.authenticate('google', { scope: [
 				'profile',
 				'email'
-			]
+			],
+			prompt: 'select_account'  // tells Google to always make user select account
 		}));
 
 		// callback for google auth

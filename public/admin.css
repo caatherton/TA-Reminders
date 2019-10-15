@@ -98,3 +98,7 @@ input {
 #admins {
 	display: inline-block;
 }
+
+.n-a {
+	color: gray;
+}

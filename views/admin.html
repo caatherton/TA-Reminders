@@ -103,10 +103,19 @@
 		</tr>
 		{{#TAs}}
 		<tr>
-			<td>{{name}}</td>
+			<td>
+				{{#name}}{{name}}{{/name}}
+				{{^name}}<i class="n-a">N/A</i>{{/name}}
+			</td>
 			<td>{{email}}</td>
-			<td>{{phone}}</td>
-			<td>{{type}}</td>
+			<td>
+				{{#phone}}{{phone}}{{/phone}}
+				{{^phone}}<i class="n-a">N/A</i>{{/phone}}
+			</td>
+			<td>
+				{{#type}}{{type}}{{/type}}
+				{{^type}}<i class="n-a">N/A</i>{{/type}}
+			</td>
 			<td><a href="/editTA/{{uid}}" class="edit" title="Edit TA"><i class="far fa-edit"></i></a></td>
 			<td><button onclick="removeTA({{uid}}, '{{name}}');" class="remove" title="Remove TA"><i class="fas fa-trash"></i></button></td>
 		</tr>
